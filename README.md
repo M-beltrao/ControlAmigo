@@ -1,5 +1,10 @@
 # 💰 ControlAmigo
 
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-brightgreen)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue)
+![Status](https://img.shields.io/badge/Status-Em%20desenvolvimento-yellow)
+
 Aplicação web para **controle financeiro pessoal**, desenvolvida com foco em organização de receitas e despesas, gerenciamento de usuários e acompanhamento de transações.
 
 > 🚧 **Projeto em desenvolvimento**
@@ -111,6 +116,8 @@ src/main/java/com/mariana/controlefinanceiro
 ## ▶️ Como executar o projeto
 
 ### Pré-requisitos
+
+Para executar o projeto localmente, é necessário ter:
 
 - Java instalado
 - PostgreSQL instalado
