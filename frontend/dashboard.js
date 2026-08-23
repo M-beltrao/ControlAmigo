@@ -773,7 +773,7 @@ function excluirTransacao(id) {
                 "erro"
             );
         })
-        .finally(() => {
+                .finally(() => {
             if (confirmarExclusao) {
                 confirmarExclusao.disabled =
                     false;
@@ -784,7 +784,9 @@ function excluirTransacao(id) {
                 `;
             }
         });
-        const modal =
+}
+
+const modal =
     document.getElementById(
         "modalTransacao"
     );
@@ -1871,6 +1873,17 @@ if (btnConectarBanco) {
         conectarBanco
     );
 }
+const btnConectarBanco =
+    document.getElementById(
+        "btnConectarBanco"
+    );
+
+if (btnConectarBanco) {
+    btnConectarBanco.addEventListener(
+        "click",
+        conectarBanco
+    );
+}
 
 const btnSincronizarBanco =
     document.getElementById(
@@ -1973,6 +1986,7 @@ if (btnSair) {
             );
         }
     );
+}
 
     const relatorioMes =
         document.getElementById(
@@ -2194,7 +2208,5 @@ if (btnSair) {
     }
 
     carregarOpcoesRelatorio();
-}
 
 carregarSaldoBancario();
-}
