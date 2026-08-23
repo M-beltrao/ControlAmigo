@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ControlAmigo</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <div id="toast-container"></div>
+
+    <div class="background">
+        <div class="circle circle1"></div>
+        <div class="circle circle2"></div>
+        <div class="circle circle3"></div>
+    </div>
+
+    <main class="container">
+
+        <section class="left">
+
+            <div class="logo">
+
+                <div class="logo-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+
+                <h1>
+                    Control<span>Amigo</span>
+                </h1>
+
+            </div>
+
+            <div class="hero-text">
+
+                <span class="tag">
+                    <i class="fa-solid fa-chart-line"></i>
+                    Controle financeiro simples
+                </span>
+
+                <h2>
+                    Organize sua vida financeira
+                    <span>sem complicação.</span>
+                </h2>
+
+                <p>
+                    Registre suas receitas e despesas, acompanhe seus gastos
+                    e entenda melhor para onde seu dinheiro está indo.
+                </p>
+
+            </div>
+
+            <div class="beneficios">
+
+                <div class="beneficio">
+
+                    <div class="beneficio-icon">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+
+                    <div>
+                        <strong>Visualize</strong>
+                        <span>seus gastos</span>
+                    </div>
+
+                </div>
+
+                <div class="beneficio">
+
+                    <div class="beneficio-icon">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                    </div>
+
+                    <div>
+                        <strong>Acompanhe</strong>
+                        <span>suas receitas</span>
+                    </div>
+
+                </div>
+
+                <div class="beneficio">
+
+                    <div class="beneficio-icon">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+
+                    <div>
+                        <strong>Organize</strong>
+                        <span>suas finanças</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="illustration">
+
+                <div class="floating-card floating-card-left">
+
+                    <div class="floating-icon">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </div>
+
+                    <div>
+                        <strong>Planeje melhor</strong>
+                        <span>seu futuro</span>
+                    </div>
+
+                </div>
+
+                <div class="phone">
+
+                    <div class="phone-frame">
+
+                        <div class="phone-screen">
+
+                            <div class="phone-status">
+
+                                <span>9:41</span>
+
+                                <div class="status-icons">
+                                    <i class="fa-solid fa-signal"></i>
+                                    <i class="fa-solid fa-wifi"></i>
+                                    <i class="fa-solid fa-battery-full"></i>
+                                </div>
+
+                            </div>
+
+                            <div class="phone-camera"></div>
+
+                            <div class="app-header">
+
+                                <div>
+                                    <small>ControlAmigo</small>
+                                    <h3>Resumo financeiro</h3>
+                                </div>
+
+                                <button class="notification-button">
+                                    <i class="fa-regular fa-bell"></i>
+                                </button>
+
+                            </div>
+
+                            <div class="app-balance">
+
+                                <div class="balance-title">
+                                    <span>Saldo disponível</span>
+                                    <i class="fa-solid fa-wallet"></i>
+                                </div>
+
+                                <h2>
+                                    R$ 5.480,00
+                                </h2>
+
+                                <div class="balance-bottom">
+
+                                    <span class="positive">
+                                        <i class="fa-solid fa-arrow-trend-up"></i>
+                                        8,4%
+                                    </span>
+
+                                    <small>
+                                        este mês
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                            <div class="app-summary">
+
+                                <div class="app-summary-card receita-app">
+
+                                    <div class="summary-icon">
+                                        <i class="fa-solid fa-arrow-up"></i>
+                                    </div>
+
+                                    <div>
+                                        <small>Receitas</small>
+                                        <strong>R$ 7.200</strong>
+                                    </div>
+
+                                </div>
+
+                                <div class="app-summary-card despesa-app">
+
+                                    <div class="summary-icon">
+                                        <i class="fa-solid fa-arrow-down"></i>
+                                    </div>
+
+                                    <div>
+                                        <small>Despesas</small>
+                                        <strong>R$ 1.720</strong>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="app-chart-card">
+
+                                <div class="chart-header">
+
+                                    <div>
+                                        <small>Gastos por categoria</small>
+                                        <strong>Este mês</strong>
+                                    </div>
+
+                                    <i class="fa-solid fa-ellipsis"></i>
+
+                                </div>
+
+                                <div class="chart-content">
+
+                                    <div class="donut-chart">
+
+                                        <div class="donut-center">
+                                            <span>R$</span>
+                                            <strong>1.720</strong>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="chart-legend">
+
+                                        <div>
+                                            <span class="legend-dot moradia"></span>
+                                            Moradia
+                                        </div>
+
+                                        <div>
+                                            <span class="legend-dot alimentacao"></span>
+                                            Alimentação
+                                        </div>
+
+                                        <div>
+                                            <span class="legend-dot transporte"></span>
+                                            Transporte
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="transactions-card">
+
+                                <div class="transactions-title">
+
+                                    <div>
+                                        <small>
+                                            Últimas movimentações
+                                        </small>
+                                    </div>
+
+                                    <span>
+                                        Ver todas
+                                    </span>
+
+                                </div>
+
+                                <div class="transaction-row">
+
+                                    <div class="transaction-left">
+
+                                        <div class="transaction-icon">
+                                            <i class="fa-solid fa-cart-shopping"></i>
+                                        </div>
+
+                                        <div>
+                                            <strong>Supermercado</strong>
+                                            <small>Alimentação</small>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="transaction-value">
+                                        - R$ 152,90
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="app-navigation">
+
+                                <button class="nav-item active">
+
+                                    <i class="fa-solid fa-house"></i>
+
+                                    <span>
+                                        Início
+                                    </span>
+
+                                </button>
+
+                                <button class="nav-add">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+
+                                <button class="nav-item">
+
+                                    <i class="fa-solid fa-clock-rotate-left"></i>
+
+                                    <span>
+                                        Histórico
+                                    </span>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="floating-card floating-card-right">
+
+                    <div class="floating-icon secure">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+
+                    <div>
+                        <strong>Seus dados</strong>
+                        <span>sempre seguros</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="right">
+
+            <div class="form-box">
+
+                <div id="login">
+
+                    <div class="form-header">
+
+                        <div class="form-icon">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+
+                        <h2>
+                            Bem-vindo(a) de volta!
+                        </h2>
+
+                        <p>
+                            Entre na sua conta para continuar.
+                        </p>
+
+                    </div>
+
+                    <div class="input-box">
+
+                        <i class="fa-regular fa-user"></i>
+
+                        <input
+                            type="text"
+                            id="loginUsuario"
+                            placeholder="E-mail ou username"
+                            autocomplete="username"
+                        >
+
+                    </div>
+
+                    <div class="input-box">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        <input
+                            type="password"
+                            id="loginSenha"
+                            placeholder="Senha"
+                            autocomplete="current-password"
+                        >
+
+                        <button
+                            type="button"
+                            class="mostrar-senha"
+                            data-input="loginSenha"
+                        >
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+
+                    </div>
+
+                    <div class="forgot-password">
+
+                        <button
+                            type="button"
+                            id="btnEsqueciSenha"
+                            onclick="mostrarRecuperacaoSenha()"
+                        >
+                            Esqueci minha senha
+                        </button>
+
+                    </div>
+
+                    <button
+                        class="btn"
+                        id="btnLogin"
+                    >
+
+                        <span>
+                            Entrar
+                        </span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+                    <div class="separator">
+                        <span></span>
+                    </div>
+
+                    <p class="switch">
+
+                        Ainda não possui uma conta?
+
+                        <span onclick="mostrarCadastro()">
+                            Criar conta
+                        </span>
+
+                    </p>
+
+                </div>
+
+                <div id="recuperacaoSenha">
+
+                    <div class="form-header">
+
+                        <div class="form-icon">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+
+                        <h2>
+                            Recuperar senha
+                        </h2>
+
+                        <p>
+                            Informe seu e-mail para receber um código de verificação.
+                        </p>
+
+                    </div>
+
+                    <div id="etapaEmailRecuperacao">
+
+                        <div class="input-box">
+
+                            <i class="fa-regular fa-envelope"></i>
+
+                            <input
+                                type="email"
+                                id="emailRecuperacao"
+                                placeholder="E-mail cadastrado"
+                                autocomplete="email"
+                            >
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn"
+                            id="btnEnviarCodigo"
+                        >
+
+                            <span>
+                                Enviar código
+                            </span>
+
+                            <i class="fa-solid fa-paper-plane"></i>
+
+                        </button>
+
+                    </div>
+
+                    <div id="etapaNovaSenha">
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-shield-halved"></i>
+
+                            <input
+                                type="text"
+                                id="codigoRecuperacao"
+                                placeholder="Código de 6 dígitos"
+                                maxlength="6"
+                                inputmode="numeric"
+                            >
+
+                        </div>
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                            <input
+                                type="password"
+                                id="novaSenhaRecuperacao"
+                                placeholder="Nova senha"
+                                autocomplete="new-password"
+                            >
+
+                            <button
+                                type="button"
+                                class="mostrar-senha"
+                                data-input="novaSenhaRecuperacao"
+                            >
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+
+                        </div>
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                            <input
+                                type="password"
+                                id="confirmarNovaSenhaRecuperacao"
+                                placeholder="Confirmar nova senha"
+                                autocomplete="new-password"
+                            >
+
+                            <button
+                                type="button"
+                                class="mostrar-senha"
+                                data-input="confirmarNovaSenhaRecuperacao"
+                            >
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn"
+                            id="btnRedefinirSenha"
+                        >
+
+                            <span>
+                                Redefinir senha
+                            </span>
+
+                            <i class="fa-solid fa-check"></i>
+
+                        </button>
+
+                    </div>
+
+                    <p class="switch">
+
+                        Lembrou sua senha?
+
+                        <span onclick="mostrarLogin()">
+                            Voltar para o login
+                        </span>
+
+                    </p>
+
+                </div>
+
+                <div id="cadastro">
+
+                    <div class="form-header">
+
+                        <div class="form-icon">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+
+                        <h2>
+                            Crie sua conta
+                        </h2>
+
+                        <p>
+                            Comece a organizar suas finanças.
+                        </p>
+
+                    </div>
+
+                    <div class="input-box">
+
+                        <i class="fa-regular fa-user"></i>
+
+                        <input
+                            type="text"
+                            id="nome"
+                            placeholder="Nome completo"
+                            autocomplete="name"
+                        >
+
+                    </div>
+
+                    <div class="input-box">
+
+                        <i class="fa-solid fa-at"></i>
+
+                        <input
+                            type="text"
+                            id="username"
+                            placeholder="Username"
+                            autocomplete="username"
+                        >
+
+                    </div>
+
+                    <div class="input-box">
+
+                        <i class="fa-regular fa-envelope"></i>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="E-mail"
+                            autocomplete="email"
+                        >
+
+                    </div>
+
+                    <div class="input-box">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        <input
+                            type="password"
+                            id="senha"
+                            placeholder="Senha"
+                            autocomplete="new-password"
+                        >
+
+                        <button
+                            type="button"
+                            class="mostrar-senha"
+                            data-input="senha"
+                        >
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+
+                    </div>
+
+                    <div class="input-box">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        <input
+                            type="password"
+                            id="confirmarSenha"
+                            placeholder="Confirmar senha"
+                            autocomplete="new-password"
+                        >
+
+                        <button
+                            type="button"
+                            class="mostrar-senha"
+                            data-input="confirmarSenha"
+                        >
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+
+                    </div>
+
+                    <button
+                        class="btn"
+                        id="btnCadastro"
+                    >
+
+                        <span>
+                            Criar conta
+                        </span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+                    <p class="switch">
+
+                        Já possui uma conta?
+
+                        <span onclick="mostrarLogin()">
+                            Entrar
+                        </span>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

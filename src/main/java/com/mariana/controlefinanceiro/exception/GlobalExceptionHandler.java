@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.mariana.controlefinanceiro.exception.CodigoVerificacaoException;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -41,5 +43,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(exception.getMessage());
+    }
+    @ExceptionHandler(CodigoVerificacaoException.class)
+    public ResponseEntity<Map<String, String>> tratarCodigoVerificacao(
+            CodigoVerificacaoException ex
+    ) {
+        return ResponseEntity
+                .badRequest()
+                .body(Map.of(
+                        "mensagem",
+                        ex.getMessage()
+                ));
     }
 }

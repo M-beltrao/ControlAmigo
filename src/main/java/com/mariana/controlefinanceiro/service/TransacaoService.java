@@ -7,6 +7,8 @@ import com.mariana.controlefinanceiro.model.Usuario;
 import com.mariana.controlefinanceiro.repository.TransacaoRepository;
 import com.mariana.controlefinanceiro.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
+import com.mariana.controlefinanceiro.model.ContaBancaria;
+import java.time.LocalDate;
 
 import java.util.List;
 
@@ -24,44 +26,141 @@ public class TransacaoService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public Transacao salvarTransacao(Long usuarioId, Transacao transacao) {
+    public Transacao salvarTransacao(
+            Long usuarioId,
+            Transacao transacao
+    ) {
 
         Usuario usuario = usuarioRepository
                 .findById(usuarioId)
                 .orElseThrow(() ->
-                        new UsuarioNaoEncontradoException("Usuário não encontrado")
+                        new UsuarioNaoEncontradoException(
+                                "Usuário não encontrado"
+                        )
                 );
 
         transacao.setUsuario(usuario);
 
+        transacao.setOrigem("MANUAL");
+
+        transacao.setIdentificadorExterno(null);
+
         return transacaoRepository.save(transacao);
     }
 
-    public List<Transacao> listarPorUsuario(Long usuarioId) {
-        return transacaoRepository.findByUsuarioId(usuarioId);
-    }
+    public Transacao salvarTransacaoBancaria(
+            Long usuarioId,
+            ContaBancaria contaBancaria,
+            Transacao transacao
+    ) {
 
-    public Transacao atualizarTransacao(Long id, Transacao transacao) {
-
-        Transacao transacaoExistente = transacaoRepository.findById(id)
+        Usuario usuario = usuarioRepository
+                .findById(usuarioId)
                 .orElseThrow(() ->
-                        new TransacaoNaoEncontradaException("Transação não encontrada")
+                        new UsuarioNaoEncontradoException(
+                                "Usuário não encontrado"
+                        )
                 );
 
-        transacaoExistente.setValor(transacao.getValor());
-        transacaoExistente.setDestinatario(transacao.getDestinatario());
-        transacaoExistente.setDescricao(transacao.getDescricao());
-        transacaoExistente.setCategoria(transacao.getCategoria());
-        transacaoExistente.setData(transacao.getData());
-        transacaoExistente.setTipo(transacao.getTipo());
+        if (
+                transacao.getIdentificadorExterno() == null ||
+                        transacao.getIdentificadorExterno().isBlank()
+        ) {
+            throw new IllegalArgumentException(
+                    "A transação bancária precisa possuir um identificador externo."
+            );
+        }
 
-        return transacaoRepository.save(transacaoExistente);
+        boolean jaExiste =
+                transacaoRepository
+                        .existsByIdentificadorExterno(
+                                transacao.getIdentificadorExterno()
+                        );
+
+        if (jaExiste) {
+            throw new IllegalArgumentException(
+                    "Esta transação bancária já foi cadastrada."
+            );
+        }
+
+        transacao.setUsuario(usuario);
+
+        transacao.setContaBancaria(contaBancaria);
+
+        transacao.setOrigem(
+                "BANCO"
+        );
+
+        return transacaoRepository.save(
+                transacao
+        );
+    }
+
+    public boolean existePorIdentificadorExterno(
+            String identificadorExterno
+    ) {
+
+        return transacaoRepository
+                .existsByIdentificadorExterno(
+                        identificadorExterno
+                );
+    }
+
+    public List<Transacao> listarPorUsuario(
+            Long usuarioId
+    ) {
+        return transacaoRepository
+                .findByUsuarioId(usuarioId);
+    }
+
+    public Transacao atualizarTransacao(
+            Long id,
+            Transacao transacao
+    ) {
+
+        Transacao transacaoExistente =
+                transacaoRepository.findById(id)
+                        .orElseThrow(() ->
+                                new TransacaoNaoEncontradaException(
+                                        "Transação não encontrada"
+                                )
+                        );
+
+        transacaoExistente.setValor(
+                transacao.getValor()
+        );
+
+        transacaoExistente.setDestinatario(
+                transacao.getDestinatario()
+        );
+
+        transacaoExistente.setDescricao(
+                transacao.getDescricao()
+        );
+
+        transacaoExistente.setCategoria(
+                transacao.getCategoria()
+        );
+
+        transacaoExistente.setData(
+                transacao.getData()
+        );
+
+        transacaoExistente.setTipo(
+                transacao.getTipo()
+        );
+
+        return transacaoRepository.save(
+                transacaoExistente
+        );
     }
 
     public void excluirTransacao(Long id) {
 
         if (!transacaoRepository.existsById(id)) {
-            throw new TransacaoNaoEncontradaException("Transação não encontrada");
+            throw new TransacaoNaoEncontradaException(
+                    "Transação não encontrada"
+            );
         }
 
         transacaoRepository.deleteById(id);
@@ -71,7 +170,58 @@ public class TransacaoService {
 
         return transacaoRepository.findById(id)
                 .orElseThrow(() ->
-                        new TransacaoNaoEncontradaException("Transação não encontrada")
+                        new TransacaoNaoEncontradaException(
+                                "Transação não encontrada"
+                        )
                 );
+    }
+    public List<Transacao> listarPorPeriodo(
+            Long usuarioId,
+            int mes,
+            int ano
+    ) {
+
+        LocalDate inicio =
+                LocalDate.of(
+                        ano,
+                        mes,
+                        1
+                );
+
+        LocalDate fim =
+                inicio.withDayOfMonth(
+                        inicio.lengthOfMonth()
+                );
+
+        return transacaoRepository
+                .findByUsuarioIdAndDataBetween(
+                        usuarioId,
+                        inicio,
+                        fim
+                );
+    }
+    public Transacao vincularContaBancaria(
+            String identificadorExterno,
+            ContaBancaria contaBancaria
+    ) {
+
+        Transacao transacao =
+                transacaoRepository
+                        .findByIdentificadorExterno(
+                                identificadorExterno
+                        )
+                        .orElseThrow(() ->
+                                new TransacaoNaoEncontradaException(
+                                        "Transação bancária não encontrada."
+                                )
+                        );
+
+        transacao.setContaBancaria(
+                contaBancaria
+        );
+
+        return transacaoRepository.save(
+                transacao
+        );
     }
 }

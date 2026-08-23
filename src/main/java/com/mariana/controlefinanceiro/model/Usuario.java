@@ -14,6 +14,10 @@ public class Usuario {
     private String username;
     @Column(unique = true, nullable = false)
     private String email;
+    @Column(unique = true)
+    private String telefone;
+    private boolean telefoneVerificado;
+    private boolean emailVerificado;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
@@ -28,6 +32,8 @@ public class Usuario {
         this.username = username;
         this.email = email;
         this.senha = senha;
+        this.telefoneVerificado = false;
+        this.emailVerificado = false;
     }
 
     public String getNome() {
@@ -58,5 +64,28 @@ public class Usuario {
     }
     public Long getId(){
         return id;
+    }
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public boolean isTelefoneVerificado() {
+        return telefoneVerificado;
+    }
+
+    public void setTelefoneVerificado(boolean telefoneVerificado) {
+        this.telefoneVerificado = telefoneVerificado;
+    }
+
+    public boolean isEmailVerificado() {
+        return emailVerificado;
+    }
+
+    public void setEmailVerificado(boolean emailVerificado) {
+        this.emailVerificado = emailVerificado;
     }
 }

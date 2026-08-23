@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 @Entity
 public class Transacao {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,21 +27,34 @@ public class Transacao {
     @Column(nullable = false)
     private String tipo;
 
+    @Column(nullable = false)
+    private String origem = "MANUAL";
+
+    private String identificadorExterno;
+
     @ManyToOne
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(
+            name = "usuario_id",
+            nullable = false
+    )
     private Usuario usuario;
 
-    public Transacao(){
+    @ManyToOne
+    @JoinColumn(name = "conta_bancaria_id")
+    private ContaBancaria contaBancaria;
+
+    public Transacao() {
     }
 
-    public Transacao(double valor,
-                     String destinatario,
-                     String descricao,
-                     String categoria,
-                     LocalDate data,
-                     String tipo,
-                     Usuario usuario
-    ){
+    public Transacao(
+            double valor,
+            String destinatario,
+            String descricao,
+            String categoria,
+            LocalDate data,
+            String tipo,
+            Usuario usuario
+    ) {
 
         this.valor = valor;
         this.destinatario = destinatario;
@@ -49,27 +63,38 @@ public class Transacao {
         this.data = data;
         this.tipo = tipo;
         this.usuario = usuario;
+        this.origem = "MANUAL";
     }
-    public Long getId(){
+
+    public Long getId() {
         return id;
     }
-    public double getValor(){
+
+    public double getValor() {
         return valor;
     }
-    public void setValor(double valor){
+
+    public void setValor(double valor) {
         this.valor = valor;
     }
-    public String getDestinatario(){
+
+    public String getDestinatario() {
         return destinatario;
     }
-    public void setDestinatario(String destinatario){
+
+    public void setDestinatario(
+            String destinatario
+    ) {
         this.destinatario = destinatario;
     }
+
     public String getDescricao() {
         return descricao;
     }
 
-    public void setDescricao(String descricao) {
+    public void setDescricao(
+            String descricao
+    ) {
         this.descricao = descricao;
     }
 
@@ -77,7 +102,9 @@ public class Transacao {
         return categoria;
     }
 
-    public void setCategoria(String categoria) {
+    public void setCategoria(
+            String categoria
+    ) {
         this.categoria = categoria;
     }
 
@@ -85,7 +112,9 @@ public class Transacao {
         return data;
     }
 
-    public void setData(LocalDate data) {
+    public void setData(
+            LocalDate data
+    ) {
         this.data = data;
     }
 
@@ -93,17 +122,50 @@ public class Transacao {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(
+            String tipo
+    ) {
         this.tipo = tipo;
     }
 
-    public Usuario getUsuario(){
+    public String getOrigem() {
+        return origem;
+    }
+
+    public void setOrigem(
+            String origem
+    ) {
+        this.origem = origem;
+    }
+
+    public String getIdentificadorExterno() {
+        return identificadorExterno;
+    }
+
+    public void setIdentificadorExterno(
+            String identificadorExterno
+    ) {
+        this.identificadorExterno =
+                identificadorExterno;
+    }
+
+    public Usuario getUsuario() {
         return usuario;
     }
-    public void setUsuario(Usuario usuario){
+
+    public void setUsuario(
+            Usuario usuario
+    ) {
         this.usuario = usuario;
     }
+    public ContaBancaria getContaBancaria() {
+        return contaBancaria;
+    }
+
+    public void setContaBancaria(
+            ContaBancaria contaBancaria
+    ) {
+        this.contaBancaria =
+                contaBancaria;
+    }
 }
-
-
-
