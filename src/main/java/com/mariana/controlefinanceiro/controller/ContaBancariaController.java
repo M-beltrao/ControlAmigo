@@ -9,7 +9,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/contas-bancarias")
-@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class ContaBancariaController {
 
     private final ContaBancariaService contaBancariaService;
