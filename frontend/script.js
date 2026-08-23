@@ -5,6 +5,8 @@ const etapaEmailRecuperacao = document.getElementById("etapaEmailRecuperacao");
 const etapaNovaSenha = document.getElementById("etapaNovaSenha");
 const btnEnviarCodigo = document.getElementById("btnEnviarCodigo");
 
+const API_URL = "https://controlamigo-2.onrender.com";
+
 function mostrarCadastro() {
     login.style.opacity = "0";
     login.style.transform = "translateY(-10px)";
@@ -371,7 +373,7 @@ if (btnCadastro) {
 
         ativarLoadingCadastro();
 
-        fetch("http://localhost:8080/usuarios", {
+        fetch(`${API_URL}/usuarios`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -497,7 +499,7 @@ if (btnLogin) {
 
         ativarLoadingLogin();
 
-        fetch("http://localhost:8080/login", {
+        fetch(`${API_URL}/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -619,7 +621,7 @@ if (btnEnviarCodigo) {
 
         try {
             const response = await fetch(
-                "http://localhost:8080/senha/recuperar",
+                `${API_URL}/senha/recuperar`,
                 {
                     method: "POST",
                     headers: {
@@ -793,7 +795,7 @@ if (btnRedefinirSenha) {
             try {
                 const response =
                     await fetch(
-                        "http://localhost:8080/senha/redefinir",
+                        `${API_URL}/senha/redefinir`,
                         {
                             method: "PUT",
                             headers: {

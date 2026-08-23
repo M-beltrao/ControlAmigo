@@ -2,6 +2,8 @@ const nomeUsuario = localStorage.getItem("usuarioNome");
 const usuarioId = localStorage.getItem("usuarioId");
 const usuarioUsername = localStorage.getItem("usuarioUsername");
 
+const API_URL = "https://controlamigo-2.onrender.com";
+
 let saldoBancarioAtual = null;
 let transacoesCarregadas = [];
 let mostrarTodasTransacoes = false;
@@ -46,7 +48,7 @@ function formatarMoeda(valor) {
 
 function carregarTransacoes() {
     fetch(
-        `http://localhost:8080/transacoes/usuario/${usuarioId}`
+        `${API_URL}/transacoes/usuario/${usuarioId}`
     )
         .then(response => {
             if (!response.ok) {
@@ -204,7 +206,7 @@ async function carregarSaldoBancario() {
     try {
         const responseContas =
             await fetch(
-                `http://localhost:8080/contas-bancarias/usuario/${usuarioId}`
+                `${API_URL}/contas-bancarias/usuario/${usuarioId}`
             );
 
         if (!responseContas.ok) {
@@ -230,7 +232,7 @@ async function carregarSaldoBancario() {
 
         const responseSaldo =
             await fetch(
-                `http://localhost:8080/contas-bancarias/usuario/${usuarioId}/saldo`
+                `${API_URL}/contas-bancarias/usuario/${usuarioId}/saldo`
             );
 
         if (!responseSaldo.ok) {
@@ -734,7 +736,7 @@ if (confirmarExclusao) {
 
 function excluirTransacao(id) {
     fetch(
-        `http://localhost:8080/transacoes/${id}`,
+        `${API_URL}/transacoes/${id}`,
         {
             method: "DELETE"
         }
@@ -782,9 +784,7 @@ function excluirTransacao(id) {
                 `;
             }
         });
-}
-
-const modal =
+        const modal =
     document.getElementById(
         "modalTransacao"
     );
@@ -1140,8 +1140,8 @@ if (salvarTransacao) {
 
             const url =
                 editando
-                    ? `http://localhost:8080/transacoes/${transacaoEditandoId}`
-                    : `http://localhost:8080/transacoes/usuario/${usuarioId}`;
+                    ? `${API_URL}/transacoes/${transacaoEditandoId}`
+                    : `${API_URL}/transacoes/usuario/${usuarioId}`;
 
             const metodo =
                 editando
@@ -1315,7 +1315,6 @@ function limparFormulario() {
         }
     });
 }
-
 const btnPerfil =
     document.getElementById(
         "btnPerfil"
@@ -1487,7 +1486,7 @@ async function carregarPerfil() {
     try {
         const response =
             await fetch(
-                `http://localhost:8080/usuarios/${usuarioId}`
+                `${API_URL}/usuarios/${usuarioId}`
             );
 
         if (!response.ok) {
@@ -1723,7 +1722,7 @@ async function conectarBanco() {
     try {
         const response =
             await fetch(
-                `http://localhost:8080/pluggy/connect-token/${usuarioId}`,
+                `${API_URL}/pluggy/connect-token/${usuarioId}`,
                 {
                     method: "POST"
                 }
@@ -1776,7 +1775,7 @@ async function conectarBanco() {
                             try {
                                 const responseSincronizacao =
                                     await fetch(
-                                        `http://localhost:8080/pluggy/contas/sincronizar/${usuarioId}/${itemId}`,
+                                        `${API_URL}/pluggy/contas/sincronizar/${usuarioId}/${itemId}`,
                                         {
                                             method: "POST"
                                         }
@@ -1897,7 +1896,7 @@ async function sincronizarBanco() {
     try {
         const response =
             await fetch(
-                `http://localhost:8080/pluggy/sincronizar/usuario/${usuarioId}`,
+                `${API_URL}/pluggy/sincronizar/usuario/${usuarioId}`,
                 {
                     method: "POST"
                 }
@@ -1974,226 +1973,228 @@ if (btnSair) {
             );
         }
     );
+
     const relatorioMes =
-    document.getElementById(
-        "relatorioMes"
-    );
-
-const relatorioAno =
-    document.getElementById(
-        "relatorioAno"
-    );
-
-const btnGerarRelatorio =
-    document.getElementById(
-        "btnGerarRelatorio"
-    );
-
-function carregarOpcoesRelatorio() {
-    if (
-        !relatorioMes ||
-        !relatorioAno
-    ) {
-        return;
-    }
-
-    const hoje =
-        new Date();
-
-    const mesAtual =
-        hoje.getMonth() + 1;
-
-    const anoAtual =
-        hoje.getFullYear();
-
-    relatorioMes.value =
-        String(mesAtual);
-
-    relatorioAno.innerHTML = "";
-
-    for (
-        let ano = anoAtual;
-        ano >= anoAtual - 10;
-        ano--
-    ) {
-        const option =
-            document.createElement(
-                "option"
-            );
-
-        option.value =
-            String(ano);
-
-        option.textContent =
-            String(ano);
-
-        relatorioAno.appendChild(
-            option
-        );
-    }
-
-    relatorioAno.value =
-        String(anoAtual);
-}
-
-async function buscarTransacoesRelatorio(
-    mes,
-    ano
-) {
-    const response =
-        await fetch(
-            `http://localhost:8080/transacoes/usuario/${usuarioId}/periodo?mes=${mes}&ano=${ano}`
+        document.getElementById(
+            "relatorioMes"
         );
 
-    if (!response.ok) {
-        throw new Error(
-            "Não foi possível buscar as transações do período."
+    const relatorioAno =
+        document.getElementById(
+            "relatorioAno"
         );
-    }
 
-    return await response.json();
-}
+    const btnGerarRelatorio =
+        document.getElementById(
+            "btnGerarRelatorio"
+        );
 
-function calcularResumoRelatorio(
-    transacoes
-) {
-    let receitas = 0;
-    let despesas = 0;
+    function carregarOpcoesRelatorio() {
+        if (
+            !relatorioMes ||
+            !relatorioAno
+        ) {
+            return;
+        }
 
-    transacoes.forEach(
-        transacao => {
-            const valor =
-                Number(
-                    transacao.valor || 0
+        const hoje =
+            new Date();
+
+        const mesAtual =
+            hoje.getMonth() + 1;
+
+        const anoAtual =
+            hoje.getFullYear();
+
+        relatorioMes.value =
+            String(mesAtual);
+
+        relatorioAno.innerHTML = "";
+
+        for (
+            let ano = anoAtual;
+            ano >= anoAtual - 10;
+            ano--
+        ) {
+            const option =
+                document.createElement(
+                    "option"
                 );
 
-            if (
-                transacao.tipo ===
-                "RECEITA"
-            ) {
-                receitas += valor;
-            }
+            option.value =
+                String(ano);
 
-            if (
-                transacao.tipo ===
-                "DESPESA"
-            ) {
-                despesas += valor;
-            }
+            option.textContent =
+                String(ano);
+
+            relatorioAno.appendChild(
+                option
+            );
         }
-    );
 
-    return {
-        receitas,
-        despesas,
-        saldo:
-            receitas - despesas
-    };
-}
-
-async function gerarRelatorio() {
-    if (
-        !relatorioMes ||
-        !relatorioAno ||
-        !btnGerarRelatorio
-    ) {
-        return;
+        relatorioAno.value =
+            String(anoAtual);
     }
 
-    const mes =
-        Number(relatorioMes.value);
-
-    const ano =
-        Number(relatorioAno.value);
-
-    const conteudoOriginal =
-        btnGerarRelatorio.innerHTML;
-
-    btnGerarRelatorio.disabled =
-        true;
-
-    btnGerarRelatorio.innerHTML = `
-        <i class="fa-solid fa-spinner fa-spin"></i>
-        Gerando PDF...
-    `;
-
-    try {
+    async function buscarTransacoesRelatorio(
+        mes,
+        ano
+    ) {
         const response =
             await fetch(
-                `http://localhost:8080/relatorios/usuario/${usuarioId}?mes=${mes}&ano=${ano}`
+                `${API_URL}/transacoes/usuario/${usuarioId}/periodo?mes=${mes}&ano=${ano}`
             );
 
         if (!response.ok) {
             throw new Error(
-                "Não foi possível gerar o relatório."
+                "Não foi possível buscar as transações do período."
             );
         }
 
-        const blob =
-            await response.blob();
-
-        const url =
-            window.URL.createObjectURL(
-                blob
-            );
-
-        const link =
-            document.createElement(
-                "a"
-            );
-
-        link.href = url;
-
-        link.download =
-            `relatorio_controlamigo_${String(mes).padStart(2, "0")}_${ano}.pdf`;
-
-        document.body.appendChild(
-            link
-        );
-
-        link.click();
-
-        link.remove();
-
-        window.URL.revokeObjectURL(
-            url
-        );
-
-        mostrarMensagemSincronizacao(
-            "Relatório gerado!",
-            "O PDF do período foi baixado com sucesso.",
-            "sucesso"
-        );
-
-    } catch (error) {
-        console.error(
-            "Erro ao gerar relatório:",
-            error
-        );
-
-        mostrarMensagemSincronizacao(
-            "Erro no relatório",
-            "Não foi possível gerar o PDF.",
-            "erro"
-        );
-
-    } finally {
-        btnGerarRelatorio.disabled =
-            false;
-
-        btnGerarRelatorio.innerHTML =
-            conteudoOriginal;
+        return await response.json();
     }
-}
 
-if (btnGerarRelatorio) {
-    btnGerarRelatorio.addEventListener(
-        "click",
-        gerarRelatorio
-    );
-}
+    function calcularResumoRelatorio(
+        transacoes
+    ) {
+        let receitas = 0;
+        let despesas = 0;
 
-carregarOpcoesRelatorio();
+        transacoes.forEach(
+            transacao => {
+                const valor =
+                    Number(
+                        transacao.valor || 0
+                    );
+
+                if (
+                    transacao.tipo ===
+                    "RECEITA"
+                ) {
+                    receitas += valor;
+                }
+
+                if (
+                    transacao.tipo ===
+                    "DESPESA"
+                ) {
+                    despesas += valor;
+                }
+            }
+        );
+
+        return {
+            receitas,
+            despesas,
+            saldo:
+                receitas - despesas
+        };
+    }
+
+    async function gerarRelatorio() {
+        if (
+            !relatorioMes ||
+            !relatorioAno ||
+            !btnGerarRelatorio
+        ) {
+            return;
+        }
+
+        const mes =
+            Number(relatorioMes.value);
+
+        const ano =
+            Number(relatorioAno.value);
+
+        const conteudoOriginal =
+            btnGerarRelatorio.innerHTML;
+
+        btnGerarRelatorio.disabled =
+            true;
+
+        btnGerarRelatorio.innerHTML = `
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Gerando PDF...
+        `;
+
+        try {
+            const response =
+                await fetch(
+                    `${API_URL}/relatorios/usuario/${usuarioId}?mes=${mes}&ano=${ano}`
+                );
+
+            if (!response.ok) {
+                throw new Error(
+                    "Não foi possível gerar o relatório."
+                );
+            }
+
+            const blob =
+                await response.blob();
+
+            const url =
+                window.URL.createObjectURL(
+                    blob
+                );
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+            link.href = url;
+
+            link.download =
+                `relatorio_controlamigo_${String(mes).padStart(2, "0")}_${ano}.pdf`;
+
+            document.body.appendChild(
+                link
+            );
+
+            link.click();
+
+            link.remove();
+
+            window.URL.revokeObjectURL(
+                url
+            );
+
+            mostrarMensagemSincronizacao(
+                "Relatório gerado!",
+                "O PDF do período foi baixado com sucesso.",
+                "sucesso"
+            );
+
+        } catch (error) {
+            console.error(
+                "Erro ao gerar relatório:",
+                error
+            );
+
+            mostrarMensagemSincronizacao(
+                "Erro no relatório",
+                "Não foi possível gerar o PDF.",
+                "erro"
+            );
+
+        } finally {
+            btnGerarRelatorio.disabled =
+                false;
+
+            btnGerarRelatorio.innerHTML =
+                conteudoOriginal;
+        }
+    }
+
+    if (btnGerarRelatorio) {
+        btnGerarRelatorio.addEventListener(
+            "click",
+            gerarRelatorio
+        );
+    }
+
+    carregarOpcoesRelatorio();
 }
 
 carregarSaldoBancario();
+}
