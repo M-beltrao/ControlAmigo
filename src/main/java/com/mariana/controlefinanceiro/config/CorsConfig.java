@@ -14,16 +14,15 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
 
             @Override
-            public void addCorsMappings(
-                    CorsRegistry registry
-            ) {
+            public void addCorsMappings(CorsRegistry registry) {
 
                 registry
                         .addMapping("/**")
-                        .allowedOrigins(
-                                "http://127.0.0.1:5500",
-                                "http://localhost:5500",
-                                "https://control-amigo.vercel.app"
+                        .allowedOriginPatterns(
+                                "http://localhost:*",
+                                "http://127.0.0.1:*",
+                                "https://control-amigo.vercel.app",
+                                "https://control-amigo-*.vercel.app"
                         )
                         .allowedMethods(
                                 "GET",
