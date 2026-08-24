@@ -1873,17 +1873,6 @@ if (btnConectarBanco) {
         conectarBanco
     );
 }
-const btnConectarBanco =
-    document.getElementById(
-        "btnConectarBanco"
-    );
-
-if (btnConectarBanco) {
-    btnConectarBanco.addEventListener(
-        "click",
-        conectarBanco
-    );
-}
 
 const btnSincronizarBanco =
     document.getElementById(
