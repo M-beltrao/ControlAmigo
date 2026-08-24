@@ -1791,14 +1791,16 @@ async function conectarBanco() {
                                     );
                                 }
 
-                                await carregarSaldoBancario();
+                               await carregarSaldoBancario();
+
+                                await carregarBancosConectados();
 
                                 mostrarMensagemSincronizacao(
                                     "Banco conectado!",
                                     "Sua conta foi conectada e salva com sucesso.",
                                     "sucesso"
                                 );
-
+                                
                             } catch (error) {
                                 console.error(
                                     "Erro ao salvar conexão:",
@@ -1872,6 +1874,432 @@ if (btnConectarBanco) {
         "click",
         conectarBanco
     );
+}
+
+async function carregarBancosConectados() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/contas-bancarias/usuario/${usuarioId}`
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Não foi possível carregar os bancos conectados."
+            );
+        }
+
+        const contas =
+            await response.json();
+
+        renderizarBancosConectados(
+            Array.isArray(contas)
+                ? contas
+                : []
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar bancos conectados:",
+            error
+        );
+    }
+}
+
+
+function renderizarBancosConectados(
+    contas
+) {
+
+    let container =
+        document.getElementById(
+            "bancosConectadosContainer"
+        );
+
+    if (!container) {
+
+        const referencia =
+            document.querySelector(
+                ".resumo"
+            );
+
+        if (!referencia) {
+            return;
+        }
+
+        container =
+            document.createElement(
+                "div"
+            );
+
+        container.id =
+            "bancosConectadosContainer";
+
+        referencia.parentNode
+            .insertBefore(
+                container,
+                referencia
+            );
+    }
+
+    container.innerHTML = "";
+
+    if (contas.length === 0) {
+
+        container.style.display =
+            "none";
+
+        return;
+    }
+
+    container.style.display =
+        "block";
+
+
+    const contasPorItem =
+        new Map();
+
+
+    contas.forEach(
+        conta => {
+
+            const itemId =
+                conta.itemId ||
+                "sem-item";
+
+            if (
+                !contasPorItem.has(
+                    itemId
+                )
+            ) {
+
+                contasPorItem.set(
+                    itemId,
+                    []
+                );
+            }
+
+            contasPorItem
+                .get(itemId)
+                .push(conta);
+        }
+    );
+
+
+    contasPorItem.forEach(
+        (
+            contasDoBanco,
+            itemId
+        ) => {
+
+            const primeiraConta =
+                contasDoBanco[0];
+
+
+            const nomeBanco =
+                primeiraConta.nomeBanco ||
+                "Banco conectado";
+
+
+            const saldoBanco =
+                contasDoBanco.reduce(
+                    (
+                        total,
+                        conta
+                    ) => {
+
+                        return (
+                            total +
+                            Number(
+                                conta.saldo ||
+                                0
+                            )
+                        );
+                    },
+                    0
+                );
+
+
+            const tiposConta =
+                contasDoBanco
+                    .map(
+                        conta =>
+                            conta.tipoConta
+                    )
+                    .filter(
+                        tipo =>
+                            tipo
+                    )
+                    .join(
+                        " • "
+                    );
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "banco-conectado";
+
+
+            card.innerHTML = `
+
+                <div class="banco-conectado-info">
+
+                    <div class="banco-conectado-icone">
+
+                        <i class="fa-solid fa-building-columns"></i>
+
+                    </div>
+
+
+                    <div class="banco-conectado-dados">
+
+                        <div class="banco-conectado-status">
+
+                            <i class="fa-solid fa-circle-check"></i>
+
+                            Conectado
+
+                        </div>
+
+
+                        <h3>
+                            ${nomeBanco}
+                        </h3>
+
+
+                        <p>
+
+                            ${
+                                tiposConta ||
+                                "Conta bancária"
+                            }
+
+                            •
+
+                            ${
+                                formatarMoeda(
+                                    saldoBanco
+                                )
+                            }
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="banco-conectado-acoes">
+
+                    <button
+                        class="btn-atualizar-banco"
+                        type="button"
+                    >
+
+                        <i class="fa-solid fa-rotate"></i>
+
+                        Atualizar
+
+                    </button>
+
+
+                    <button
+                        class="btn-desconectar-banco"
+                        type="button"
+                    >
+
+                        <i class="fa-solid fa-link-slash"></i>
+
+                        Desconectar
+
+                    </button>
+
+                </div>
+
+            `;
+
+
+            const btnAtualizar =
+                card.querySelector(
+                    ".btn-atualizar-banco"
+                );
+
+
+            const btnDesconectar =
+                card.querySelector(
+                    ".btn-desconectar-banco"
+                );
+
+
+            btnAtualizar
+                .addEventListener(
+                    "click",
+                    async () => {
+
+                        await sincronizarBanco();
+
+                    }
+                );
+
+
+            btnDesconectar
+                .addEventListener(
+                    "click",
+                    async () => {
+
+                        await desconectarBanco(
+                            itemId,
+                            nomeBanco,
+                            btnDesconectar
+                        );
+
+                    }
+                );
+
+
+            container.appendChild(
+                card
+            );
+        }
+    );
+}
+
+
+async function desconectarBanco(
+    itemId,
+    nomeBanco,
+    botao
+) {
+
+    if (
+        !itemId ||
+        itemId === "sem-item"
+    ) {
+
+        mostrarMensagemSincronizacao(
+            "Erro ao desconectar",
+            "Não foi possível identificar a conexão bancária.",
+            "erro"
+        );
+
+        return;
+    }
+
+
+    const confirmar =
+        window.confirm(
+            `Deseja desconectar ${nomeBanco}? As transações já importadas continuarão salvas.`
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    const conteudoOriginal =
+        botao.innerHTML;
+
+
+    botao.disabled =
+        true;
+
+
+    botao.innerHTML = `
+
+        <i class="fa-solid fa-spinner fa-spin"></i>
+
+        Desconectando...
+
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+
+                `${API_URL}/pluggy/desconectar/${usuarioId}/${encodeURIComponent(itemId)}`,
+
+                {
+                    method:
+                        "DELETE"
+                }
+
+            );
+
+
+        if (!response.ok) {
+
+            const mensagem =
+                await response.text();
+
+
+            throw new Error(
+
+                mensagem ||
+
+                "Não foi possível desconectar o banco."
+
+            );
+        }
+
+
+        saldoBancarioAtual =
+            null;
+
+
+        await carregarSaldoBancario();
+
+
+        await carregarBancosConectados();
+
+
+        mostrarMensagemSincronizacao(
+
+            "Banco desconectado!",
+
+            `${nomeBanco} foi removido da sua conta.`,
+
+            "sucesso"
+
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao desconectar banco:",
+            error
+        );
+
+
+        mostrarMensagemSincronizacao(
+
+            "Erro ao desconectar",
+
+            "Não foi possível desconectar o banco.",
+
+            "erro"
+
+        );
+
+
+        botao.disabled =
+            false;
+
+
+        botao.innerHTML =
+            conteudoOriginal;
+    }
 }
 
 const btnSincronizarBanco =
@@ -2196,6 +2624,5 @@ if (btnSair) {
         );
     }
 
-    carregarOpcoesRelatorio();
-
 carregarSaldoBancario();
+carregarBancosConectados();

@@ -1200,6 +1200,135 @@ body {
     transform: none;
     box-shadow: none;
 }
+.banco-conectado {
+    width: 100%;
+    margin-bottom: 30px;
+    padding: 20px 24px;
+    background: white;
+    border: 1px solid #e8eef3;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.banco-conectado-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.banco-conectado-icone {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: #e6fff2;
+    color: #28b878;
+
+    font-size: 20px;
+}
+
+.banco-conectado-dados {
+    display: flex;
+    flex-direction: column;
+}
+
+.banco-conectado-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-bottom: 3px;
+
+    color: #28b878;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.banco-conectado-dados h3 {
+    color: #17375e;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.banco-conectado-dados p {
+    margin-top: 2px;
+
+    color: #8998aa;
+
+    font-size: 12px;
+}
+
+.banco-conectado-acoes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-atualizar-banco,
+.btn-desconectar-banco {
+    border: none;
+
+    padding: 11px 15px;
+
+    border-radius: 10px;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+}
+
+.btn-atualizar-banco {
+    background: #eef7fb;
+    color: #17375e;
+}
+
+.btn-atualizar-banco i {
+    color: #32cc83;
+}
+
+.btn-atualizar-banco:hover {
+    background: #e1f1f8;
+    transform: translateY(-2px);
+}
+
+.btn-desconectar-banco {
+    background: #fff0f0;
+    color: #e75d5d;
+}
+
+.btn-desconectar-banco:hover {
+    background: #ffe1e1;
+    transform: translateY(-2px);
+}
+
+.btn-atualizar-banco:disabled,
+.btn-desconectar-banco:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
 
 @media (max-width: 1050px) {
 
@@ -1242,6 +1371,20 @@ body {
 }
 
 @media (max-width: 600px) {
+    .banco-conectado {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px;
+}
+
+.banco-conectado-acoes {
+    width: 100%;
+}
+
+.btn-atualizar-banco,
+.btn-desconectar-banco {
+    flex: 1;
+}
     .relatorio-financeiro {
     padding: 20px;
 }
