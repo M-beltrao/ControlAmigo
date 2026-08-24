@@ -224,4 +224,25 @@ public class TransacaoService {
                 transacao
         );
     }
+    public void desvincularContaBancaria(
+            ContaBancaria contaBancaria
+    ) {
+
+        List<Transacao> transacoes =
+                transacaoRepository
+                        .findByContaBancariaId(
+                                contaBancaria.getId()
+                        );
+
+        for (Transacao transacao : transacoes) {
+
+            transacao.setContaBancaria(
+                    null
+            );
+        }
+
+        transacaoRepository.saveAll(
+                transacoes
+        );
+    }
 }

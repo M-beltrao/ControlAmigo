@@ -6,6 +6,7 @@ import com.mariana.controlefinanceiro.model.Usuario;
 import com.mariana.controlefinanceiro.repository.ContaBancariaRepository;
 import com.mariana.controlefinanceiro.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -84,7 +85,19 @@ public class ContaBancariaService {
     ) {
 
         return contaBancariaRepository
-                .findByUsuarioId(usuarioId);
+                .findByUsuarioId(
+                        usuarioId
+                );
+    }
+
+    public List<ContaBancaria> listarPorItemId(
+            String itemId
+    ) {
+
+        return contaBancariaRepository
+                .findByItemId(
+                        itemId
+                );
     }
 
     public double calcularSaldoTotal(
@@ -106,5 +119,16 @@ public class ContaBancariaService {
         }
 
         return saldoTotal;
+    }
+
+    @Transactional
+    public void excluirPorItemId(
+            String itemId
+    ) {
+
+        contaBancariaRepository
+                .deleteByItemId(
+                        itemId
+                );
     }
 }

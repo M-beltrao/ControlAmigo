@@ -885,4 +885,82 @@ public class PluggyService {
 
         return resultado;
     }
+    public Map<String, String> desconectarBanco(
+            Long usuarioId,
+            String itemId
+    ) {
+
+        List<ContaBancaria> contasUsuario =
+                contaBancariaService
+                        .listarPorUsuario(
+                                usuarioId
+                        );
+
+        List<ContaBancaria> contasDoItem =
+                contasUsuario
+                        .stream()
+                        .filter(
+                                conta ->
+                                        itemId.equals(
+                                                conta.getItemId()
+                                        )
+                        )
+                        .toList();
+
+        if (contasDoItem.isEmpty()) {
+
+            throw new RuntimeException(
+                    "Conexão bancária não encontrada para este usuário."
+            );
+        }
+
+        String apiKey =
+                gerarApiKey();
+
+        String url =
+                baseUrl +
+                        "/items/" +
+                        itemId;
+
+        HttpHeaders headers =
+                new HttpHeaders();
+
+        headers.set(
+                "X-API-KEY",
+                apiKey
+        );
+
+        HttpEntity<Void> request =
+                new HttpEntity<>(
+                        headers
+                );
+
+        restTemplate.exchange(
+                url,
+                HttpMethod.DELETE,
+                request,
+                Void.class
+        );
+
+        for (
+                ContaBancaria conta :
+                contasDoItem
+        ) {
+
+            transacaoService
+                    .desvincularContaBancaria(
+                            conta
+                    );
+        }
+
+        contaBancariaService
+                .excluirPorItemId(
+                        itemId
+                );
+
+        return Map.of(
+                "mensagem",
+                "Banco desconectado com sucesso."
+        );
+    }
 }

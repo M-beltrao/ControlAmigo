@@ -23,7 +23,13 @@ public interface TransacaoRepository
             LocalDate inicio,
             LocalDate fim
     );
+
     Optional<Transacao> findByIdentificadorExterno(
             String identificadorExterno
     );
+
+    List<Transacao> findByContaBancariaId(
+            Long contaBancariaId
+    );
+
 }

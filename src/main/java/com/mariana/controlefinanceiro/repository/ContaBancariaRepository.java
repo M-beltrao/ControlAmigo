@@ -20,4 +20,12 @@ public interface ContaBancariaRepository
     boolean existsByAccountId(
             String accountId
     );
+
+    List<ContaBancaria> findByItemId(
+            String itemId
+    );
+
+    void deleteByItemId(
+            String itemId
+    );
 }

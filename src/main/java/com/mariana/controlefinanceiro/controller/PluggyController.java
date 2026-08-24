@@ -85,4 +85,18 @@ public class PluggyController {
                 usuarioId
         );
     }
+    @DeleteMapping(
+            "/desconectar/{usuarioId}/{itemId}"
+    )
+    public Map<String, String> desconectarBanco(
+            @PathVariable Long usuarioId,
+            @PathVariable String itemId
+    ) {
+
+        return pluggyService
+                .desconectarBanco(
+                        usuarioId,
+                        itemId
+                );
+    }
 }
