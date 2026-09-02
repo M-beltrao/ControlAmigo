@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>ControlAmigo</title>
+    <link rel="icon" href="data:,">
 
     <link rel="stylesheet" href="style.css">
 
@@ -25,73 +26,43 @@
     <div id="toast-container"></div>
 
     <div class="background">
-        <div class="circle circle1"></div>
-        <div class="circle circle2"></div>
-        <div class="circle circle3"></div>
+        <div class="background-orb orb-1"></div>
+        <div class="background-orb orb-2"></div>
+        <div class="background-orb orb-3"></div>
     </div>
 
     <main class="container">
 
         <section class="left">
 
-            <div class="logo">
-
-                <div class="logo-icon">
-                    <i class="fa-solid fa-wallet"></i>
-                </div>
-
-                <h1>
-                    Control<span>Amigo</span>
-                </h1>
-
+        <div class="logo">
+            <div class="logo-icon">
+                    <span>C.</span>
             </div>
+
+            <h1>Control<span>Amigo</span></h1>
+        </div>
 
             <div class="hero-text">
 
                 <span class="tag">
                     <i class="fa-solid fa-chart-line"></i>
-                    Controle financeiro simples
+                    Controle financeiro inteligente
                 </span>
 
                 <h2>
-                    Organize sua vida financeira
-                    <span>sem complicação.</span>
+                    Cuide melhor das
+                    <span>suas finanças.</span>
                 </h2>
 
                 <p>
-                    Registre suas receitas e despesas, acompanhe seus gastos
-                    e entenda melhor para onde seu dinheiro está indo.
+                    Controle receitas e despesas, acompanhe seu saldo e
+                    tenha uma visão clara da sua vida financeira em um só lugar.
                 </p>
 
             </div>
 
             <div class="beneficios">
-
-                <div class="beneficio">
-
-                    <div class="beneficio-icon">
-                        <i class="fa-solid fa-chart-pie"></i>
-                    </div>
-
-                    <div>
-                        <strong>Visualize</strong>
-                        <span>seus gastos</span>
-                    </div>
-
-                </div>
-
-                <div class="beneficio">
-
-                    <div class="beneficio-icon">
-                        <i class="fa-solid fa-arrow-trend-up"></i>
-                    </div>
-
-                    <div>
-                        <strong>Acompanhe</strong>
-                        <span>suas receitas</span>
-                    </div>
-
-                </div>
 
                 <div class="beneficio">
 
@@ -102,6 +73,32 @@
                     <div>
                         <strong>Organize</strong>
                         <span>suas finanças</span>
+                    </div>
+
+                </div>
+
+                <div class="beneficio">
+
+                    <div class="beneficio-icon verde">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                    </div>
+
+                    <div>
+                        <strong>Acompanhe</strong>
+                        <span>seus resultados</span>
+                    </div>
+
+                </div>
+
+                <div class="beneficio">
+
+                    <div class="beneficio-icon">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+
+                    <div>
+                        <strong>Visualize</strong>
+                        <span>seus gastos</span>
                     </div>
 
                 </div>
@@ -117,13 +114,15 @@
                     </div>
 
                     <div>
-                        <strong>Planeje melhor</strong>
-                        <span>seu futuro</span>
+                        <strong>Controle completo</strong>
+                        <span>em um só lugar</span>
                     </div>
 
                 </div>
 
                 <div class="phone">
+
+                    <div class="phone-shadow"></div>
 
                     <div class="phone-frame">
 
@@ -147,47 +146,47 @@
 
                                 <div>
                                     <small>ControlAmigo</small>
-                                    <h3>Resumo financeiro</h3>
+                                    <h3>Visão geral</h3>
                                 </div>
 
-                                <button class="notification-button">
+                                <div class="notification-button">
                                     <i class="fa-regular fa-bell"></i>
-                                </button>
+                                </div>
 
                             </div>
 
-                            <div class="app-balance">
+                            <div class="app-hero">
 
-                                <div class="balance-title">
-                                    <span>Saldo disponível</span>
-                                    <i class="fa-solid fa-wallet"></i>
+                                <div class="app-hero-label">
+                                    RESUMO FINANCEIRO
                                 </div>
 
-                                <h2>
-                                    R$ 5.480,00
-                                </h2>
+                                <div class="app-hero-main">
 
-                                <div class="balance-bottom">
+                                    <div>
+                                        <small>Saldo atual</small>
+                                        <h2>R$ 5.480,00</h2>
+                                    </div>
 
-                                    <span class="positive">
-                                        <i class="fa-solid fa-arrow-trend-up"></i>
-                                        8,4%
-                                    </span>
-
-                                    <small>
-                                        este mês
-                                    </small>
+                                    <div class="app-wallet">
+                                        <i class="fa-solid fa-wallet"></i>
+                                    </div>
 
                                 </div>
+
+                                <span class="app-growth">
+                                    <i class="fa-solid fa-arrow-trend-up"></i>
+                                    8,4%
+                                </span>
 
                             </div>
 
                             <div class="app-summary">
 
-                                <div class="app-summary-card receita-app">
+                                <div class="app-summary-card">
 
-                                    <div class="summary-icon">
-                                        <i class="fa-solid fa-arrow-up"></i>
+                                    <div class="summary-icon receita-app">
+                                        <i class="fa-solid fa-arrow-trend-up"></i>
                                     </div>
 
                                     <div>
@@ -197,10 +196,10 @@
 
                                 </div>
 
-                                <div class="app-summary-card despesa-app">
+                                <div class="app-summary-card">
 
-                                    <div class="summary-icon">
-                                        <i class="fa-solid fa-arrow-down"></i>
+                                    <div class="summary-icon despesa-app">
+                                        <i class="fa-solid fa-arrow-trend-down"></i>
                                     </div>
 
                                     <div>
@@ -217,43 +216,29 @@
                                 <div class="chart-header">
 
                                     <div>
-                                        <small>Gastos por categoria</small>
-                                        <strong>Este mês</strong>
+                                        <strong>Evolução financeira</strong>
+                                        <small>Últimos meses</small>
                                     </div>
 
-                                    <i class="fa-solid fa-ellipsis"></i>
+                                    <i class="fa-solid fa-chart-line"></i>
 
                                 </div>
 
-                                <div class="chart-content">
+                                <div class="mini-chart">
 
-                                    <div class="donut-chart">
+                                    <div class="chart-line line-1"></div>
+                                    <div class="chart-line line-2"></div>
+                                    <div class="chart-line line-3"></div>
 
-                                        <div class="donut-center">
-                                            <span>R$</span>
-                                            <strong>1.720</strong>
-                                        </div>
-
-                                    </div>
-
-                                    <div class="chart-legend">
-
-                                        <div>
-                                            <span class="legend-dot moradia"></span>
-                                            Moradia
-                                        </div>
-
-                                        <div>
-                                            <span class="legend-dot alimentacao"></span>
-                                            Alimentação
-                                        </div>
-
-                                        <div>
-                                            <span class="legend-dot transporte"></span>
-                                            Transporte
-                                        </div>
-
-                                    </div>
+                                    <svg
+                                        class="chart-svg"
+                                        viewBox="0 0 200 70"
+                                        preserveAspectRatio="none"
+                                    >
+                                        <path
+                                            d="M0,55 C25,48 32,24 55,35 C78,47 91,42 108,23 C125,5 148,36 168,19 C181,8 190,13 200,6"
+                                        ></path>
+                                    </svg>
 
                                 </div>
 
@@ -263,11 +248,7 @@
 
                                 <div class="transactions-title">
 
-                                    <div>
-                                        <small>
-                                            Últimas movimentações
-                                        </small>
-                                    </div>
+                                    <strong>Transações recentes</strong>
 
                                     <span>
                                         Ver todas
@@ -300,29 +281,19 @@
 
                             <div class="app-navigation">
 
-                                <button class="nav-item active">
-
+                                <div class="nav-item active">
                                     <i class="fa-solid fa-house"></i>
+                                    <span>Início</span>
+                                </div>
 
-                                    <span>
-                                        Início
-                                    </span>
-
-                                </button>
-
-                                <button class="nav-add">
+                                <div class="nav-add">
                                     <i class="fa-solid fa-plus"></i>
-                                </button>
+                                </div>
 
-                                <button class="nav-item">
-
+                                <div class="nav-item">
                                     <i class="fa-solid fa-clock-rotate-left"></i>
-
-                                    <span>
-                                        Histórico
-                                    </span>
-
-                                </button>
+                                    <span>Histórico</span>
+                                </div>
 
                             </div>
 
@@ -334,13 +305,13 @@
 
                 <div class="floating-card floating-card-right">
 
-                    <div class="floating-icon secure">
+                    <div class="floating-icon seguro">
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
 
                     <div>
                         <strong>Seus dados</strong>
-                        <span>sempre seguros</span>
+                        <span>sempre protegidos</span>
                     </div>
 
                 </div>
@@ -353,12 +324,20 @@
 
             <div class="form-box">
 
+                <div class="mobile-logo">
+                    <div class="logo-icon">
+                        <span>C.</span>
+                    </div>
+
+                     <h1>Control<span>Amigo</span></h1>
+                </div>
+
                 <div id="login">
 
                     <div class="form-header">
 
                         <div class="form-icon">
-                            <i class="fa-solid fa-user"></i>
+                            <i class="fa-regular fa-user"></i>
                         </div>
 
                         <h2>
@@ -371,37 +350,53 @@
 
                     </div>
 
-                    <div class="input-box">
+                    <div class="campo">
 
-                        <i class="fa-regular fa-user"></i>
+                        <label for="loginUsuario">
+                            E-mail ou username
+                        </label>
 
-                        <input
-                            type="text"
-                            id="loginUsuario"
-                            placeholder="E-mail ou username"
-                            autocomplete="username"
-                        >
+                        <div class="input-box">
+
+                            <i class="fa-regular fa-user"></i>
+
+                            <input
+                                type="text"
+                                id="loginUsuario"
+                                placeholder="Digite seu e-mail ou username"
+                                autocomplete="username"
+                            >
+
+                        </div>
 
                     </div>
 
-                    <div class="input-box">
+                    <div class="campo">
 
-                        <i class="fa-solid fa-lock"></i>
+                        <label for="loginSenha">
+                            Senha
+                        </label>
 
-                        <input
-                            type="password"
-                            id="loginSenha"
-                            placeholder="Senha"
-                            autocomplete="current-password"
-                        >
+                        <div class="input-box">
 
-                        <button
-                            type="button"
-                            class="mostrar-senha"
-                            data-input="loginSenha"
-                        >
-                            <i class="fa-regular fa-eye"></i>
-                        </button>
+                            <i class="fa-solid fa-lock"></i>
+
+                            <input
+                                type="password"
+                                id="loginSenha"
+                                placeholder="Digite sua senha"
+                                autocomplete="current-password"
+                            >
+
+                            <button
+                                type="button"
+                                class="mostrar-senha"
+                                data-input="loginSenha"
+                            >
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+
+                        </div>
 
                     </div>
 
@@ -418,6 +413,7 @@
                     </div>
 
                     <button
+                        type="button"
                         class="btn"
                         id="btnLogin"
                     >
@@ -429,6 +425,11 @@
                         <i class="fa-solid fa-arrow-right"></i>
 
                     </button>
+
+                    <div class="secure-message">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Ambiente seguro e protegido
+                    </div>
 
                     <div class="separator">
                         <span></span>
@@ -466,16 +467,24 @@
 
                     <div id="etapaEmailRecuperacao">
 
-                        <div class="input-box">
+                        <div class="campo">
 
-                            <i class="fa-regular fa-envelope"></i>
+                            <label for="emailRecuperacao">
+                                E-mail
+                            </label>
 
-                            <input
-                                type="email"
-                                id="emailRecuperacao"
-                                placeholder="E-mail cadastrado"
-                                autocomplete="email"
-                            >
+                            <div class="input-box">
+
+                                <i class="fa-regular fa-envelope"></i>
+
+                                <input
+                                    type="email"
+                                    id="emailRecuperacao"
+                                    placeholder="Digite seu e-mail cadastrado"
+                                    autocomplete="email"
+                                >
+
+                            </div>
 
                         </div>
 
@@ -497,59 +506,83 @@
 
                     <div id="etapaNovaSenha">
 
-                        <div class="input-box">
+                        <div class="campo">
 
-                            <i class="fa-solid fa-shield-halved"></i>
+                            <label for="codigoRecuperacao">
+                                Código de verificação
+                            </label>
 
-                            <input
-                                type="text"
-                                id="codigoRecuperacao"
-                                placeholder="Código de 6 dígitos"
-                                maxlength="6"
-                                inputmode="numeric"
-                            >
+                            <div class="input-box">
 
-                        </div>
+                                <i class="fa-solid fa-shield-halved"></i>
 
-                        <div class="input-box">
+                                <input
+                                    type="text"
+                                    id="codigoRecuperacao"
+                                    placeholder="Código de 6 dígitos"
+                                    maxlength="6"
+                                    inputmode="numeric"
+                                >
 
-                            <i class="fa-solid fa-lock"></i>
-
-                            <input
-                                type="password"
-                                id="novaSenhaRecuperacao"
-                                placeholder="Nova senha"
-                                autocomplete="new-password"
-                            >
-
-                            <button
-                                type="button"
-                                class="mostrar-senha"
-                                data-input="novaSenhaRecuperacao"
-                            >
-                                <i class="fa-regular fa-eye"></i>
-                            </button>
+                            </div>
 
                         </div>
 
-                        <div class="input-box">
+                        <div class="campo">
 
-                            <i class="fa-solid fa-lock"></i>
+                            <label for="novaSenhaRecuperacao">
+                                Nova senha
+                            </label>
 
-                            <input
-                                type="password"
-                                id="confirmarNovaSenhaRecuperacao"
-                                placeholder="Confirmar nova senha"
-                                autocomplete="new-password"
-                            >
+                            <div class="input-box">
 
-                            <button
-                                type="button"
-                                class="mostrar-senha"
-                                data-input="confirmarNovaSenhaRecuperacao"
-                            >
-                                <i class="fa-regular fa-eye"></i>
-                            </button>
+                                <i class="fa-solid fa-lock"></i>
+
+                                <input
+                                    type="password"
+                                    id="novaSenhaRecuperacao"
+                                    placeholder="Digite sua nova senha"
+                                    autocomplete="new-password"
+                                >
+
+                                <button
+                                    type="button"
+                                    class="mostrar-senha"
+                                    data-input="novaSenhaRecuperacao"
+                                >
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="campo">
+
+                            <label for="confirmarNovaSenhaRecuperacao">
+                                Confirmar nova senha
+                            </label>
+
+                            <div class="input-box">
+
+                                <i class="fa-solid fa-lock"></i>
+
+                                <input
+                                    type="password"
+                                    id="confirmarNovaSenhaRecuperacao"
+                                    placeholder="Digite novamente"
+                                    autocomplete="new-password"
+                                >
+
+                                <button
+                                    type="button"
+                                    class="mostrar-senha"
+                                    data-input="confirmarNovaSenhaRecuperacao"
+                                >
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+
+                            </div>
 
                         </div>
 
@@ -594,93 +627,134 @@
                         </h2>
 
                         <p>
-                            Comece a organizar suas finanças.
+                            Comece agora a organizar suas finanças.
                         </p>
 
                     </div>
 
-                    <div class="input-box">
+                    <div class="campo">
 
-                        <i class="fa-regular fa-user"></i>
+                        <label for="nome">
+                            Nome completo
+                        </label>
 
-                        <input
-                            type="text"
-                            id="nome"
-                            placeholder="Nome completo"
-                            autocomplete="name"
-                        >
+                        <div class="input-box">
 
-                    </div>
+                            <i class="fa-regular fa-user"></i>
 
-                    <div class="input-box">
+                            <input
+                                type="text"
+                                id="nome"
+                                placeholder="Digite seu nome"
+                                autocomplete="name"
+                            >
 
-                        <i class="fa-solid fa-at"></i>
-
-                        <input
-                            type="text"
-                            id="username"
-                            placeholder="Username"
-                            autocomplete="username"
-                        >
+                        </div>
 
                     </div>
 
-                    <div class="input-box">
+                    <div class="campo">
 
-                        <i class="fa-regular fa-envelope"></i>
+                        <label for="username">
+                            Username
+                        </label>
 
-                        <input
-                            type="email"
-                            id="email"
-                            placeholder="E-mail"
-                            autocomplete="email"
-                        >
+                        <div class="input-box">
 
-                    </div>
+                            <i class="fa-solid fa-at"></i>
 
-                    <div class="input-box">
+                            <input
+                                type="text"
+                                id="username"
+                                placeholder="Escolha um username"
+                                autocomplete="username"
+                            >
 
-                        <i class="fa-solid fa-lock"></i>
-
-                        <input
-                            type="password"
-                            id="senha"
-                            placeholder="Senha"
-                            autocomplete="new-password"
-                        >
-
-                        <button
-                            type="button"
-                            class="mostrar-senha"
-                            data-input="senha"
-                        >
-                            <i class="fa-regular fa-eye"></i>
-                        </button>
+                        </div>
 
                     </div>
 
-                    <div class="input-box">
+                    <div class="campo">
 
-                        <i class="fa-solid fa-lock"></i>
+                        <label for="email">
+                            E-mail
+                        </label>
 
-                        <input
-                            type="password"
-                            id="confirmarSenha"
-                            placeholder="Confirmar senha"
-                            autocomplete="new-password"
-                        >
+                        <div class="input-box">
 
-                        <button
-                            type="button"
-                            class="mostrar-senha"
-                            data-input="confirmarSenha"
-                        >
-                            <i class="fa-regular fa-eye"></i>
-                        </button>
+                            <i class="fa-regular fa-envelope"></i>
+
+                            <input
+                                type="email"
+                                id="email"
+                                placeholder="Digite seu e-mail"
+                                autocomplete="email"
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label for="senha">
+                            Senha
+                        </label>
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                            <input
+                                type="password"
+                                id="senha"
+                                placeholder="Crie uma senha"
+                                autocomplete="new-password"
+                            >
+
+                            <button
+                                type="button"
+                                class="mostrar-senha"
+                                data-input="senha"
+                            >
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label for="confirmarSenha">
+                            Confirmar senha
+                        </label>
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                            <input
+                                type="password"
+                                id="confirmarSenha"
+                                placeholder="Digite novamente"
+                                autocomplete="new-password"
+                            >
+
+                            <button
+                                type="button"
+                                class="mostrar-senha"
+                                data-input="confirmarSenha"
+                            >
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+
+                        </div>
 
                     </div>
 
                     <button
+                        type="button"
                         class="btn"
                         id="btnCadastro"
                     >
@@ -692,6 +766,15 @@
                         <i class="fa-solid fa-arrow-right"></i>
 
                     </button>
+
+                    <div class="secure-message">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Seus dados permanecem protegidos
+                    </div>
+
+                    <div class="separator">
+                        <span></span>
+                    </div>
 
                     <p class="switch">
 
