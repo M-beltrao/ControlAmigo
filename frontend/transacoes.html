@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ControlAmigo - Transações</title>
+
+    <link rel="stylesheet" href="menu.css">
+    <link rel="stylesheet" href="transacoes.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <div id="menuContainer"></div>
+
+    <div class="pagina">
+
+        <header class="header">
+
+            <div class="header-titulo">
+                <h1>Transações</h1>
+                <p>Gerencie todas as suas movimentações financeiras.</p>
+            </div>
+
+            <button
+                id="btnNovaTransacao"
+                class="btn-nova-transacao"
+                type="button"
+            >
+                <i class="fa-solid fa-plus"></i>
+                <span>Nova transação</span>
+            </button>
+
+        </header>
+
+        <main class="conteudo-transacoes">
+
+            <section class="topo-pagina">
+
+                <div>
+                    <span class="topo-label">
+                        Controle financeiro
+                    </span>
+
+                    <h2>Suas movimentações</h2>
+
+                    <p>
+                        Acompanhe receitas, despesas e mantenha sua vida financeira organizada.
+                    </p>
+                </div>
+
+                <div class="topo-decoracao">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                </div>
+
+            </section>
+
+            <section class="resumo-transacoes">
+
+                <article class="resumo-card">
+
+                    <div class="resumo-card-topo">
+                        <div class="resumo-icon movimentado-icon">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+
+                        <span>Total movimentado</span>
+                    </div>
+
+                    <strong id="totalMovimentado">
+                        R$ 0,00
+                    </strong>
+
+                    <p>Soma de todas as movimentações</p>
+
+                </article>
+
+                <article class="resumo-card">
+
+                    <div class="resumo-card-topo">
+                        <div class="resumo-icon receita-icon">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </div>
+
+                        <span>Receitas</span>
+                    </div>
+
+                    <strong
+                        id="totalReceitas"
+                        class="valor-receita"
+                    >
+                        R$ 0,00
+                    </strong>
+
+                    <p>Total de entradas</p>
+
+                </article>
+
+                <article class="resumo-card">
+
+                    <div class="resumo-card-topo">
+                        <div class="resumo-icon despesa-icon">
+                            <i class="fa-solid fa-arrow-trend-down"></i>
+                        </div>
+
+                        <span>Despesas</span>
+                    </div>
+
+                    <strong
+                        id="totalDespesas"
+                        class="valor-despesa"
+                    >
+                        R$ 0,00
+                    </strong>
+
+                    <p>Total de saídas</p>
+
+                </article>
+
+            </section>
+
+            <section class="painel-transacoes">
+
+                <div class="painel-topo">
+
+                    <div>
+                        <span class="painel-label">
+                            Histórico
+                        </span>
+
+                        <h3>Todas as transações</h3>
+
+                        <p>
+                            Pesquise e filtre suas movimentações.
+                        </p>
+                    </div>
+
+                    <div class="painel-topo-acoes">
+
+                        <div
+                            id="contadorTransacoes"
+                            class="contador-transacoes"
+                        >
+                            0 transações
+                        </div>
+
+                        <button
+                            id="btnOcultarMovimentacoes"
+                            class="btn-ocultar-movimentacoes"
+                            type="button"
+                            title="Ocultar movimentações"
+                        >
+                            <i class="fa-regular fa-eye"></i>
+                            <span>Ocultar</span>
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="areaMovimentacoes"
+                    class="area-movimentacoes"
+                >
+
+                    <div class="filtros">
+
+                        <div class="campo-busca">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                            <input
+                                type="text"
+                                id="buscaTransacao"
+                                placeholder="Buscar por destinatário ou descrição..."
+                            >
+                        </div>
+
+                        <div class="campo-filtro">
+                            <i class="fa-solid fa-filter"></i>
+
+                            <select id="filtroTipo">
+                                <option value="">Todos os tipos</option>
+                                <option value="RECEITA">Receitas</option>
+                                <option value="DESPESA">Despesas</option>
+                            </select>
+                        </div>
+
+                        <div class="campo-filtro">
+                            <i class="fa-solid fa-tag"></i>
+
+                            <select id="filtroCategoria">
+                                <option value="">Todas as categorias</option>
+                            </select>
+                        </div>
+
+                        <button
+                            id="btnLimparFiltros"
+                            class="btn-limpar-filtros"
+                            type="button"
+                        >
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Limpar</span>
+                        </button>
+
+                    </div>
+
+                    <div
+                        id="listaTransacoes"
+                        class="lista-transacoes"
+                    >
+
+                        <div class="estado-vazio">
+
+                            <div class="estado-vazio-icon">
+                                <i class="fa-solid fa-receipt"></i>
+                            </div>
+
+                            <h4>Nenhuma transação encontrada</h4>
+
+                            <p>
+                                Suas movimentações aparecerão aqui.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        id="btnMostrarMais"
+                        class="btn-mostrar-mais"
+                        type="button"
+                    >
+                        <span>Mostrar mais</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+
+                </div>
+
+                <div
+                    id="movimentacoesOcultas"
+                    class="movimentacoes-ocultas"
+                >
+
+                    <div class="movimentacoes-ocultas-icon">
+                        <i class="fa-solid fa-eye-slash"></i>
+                    </div>
+
+                    <h4>Movimentações ocultas</h4>
+
+                    <p>
+                        Seus dados financeiros estão escondidos nesta tela.
+                    </p>
+
+                    <button
+                        id="btnMostrarMovimentacoes"
+                        class="btn-mostrar-movimentacoes"
+                        type="button"
+                    >
+                        <i class="fa-regular fa-eye"></i>
+                        Mostrar movimentações
+                    </button>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <div
+        id="modalTransacao"
+        class="modal"
+    >
+
+        <div class="modal-conteudo">
+
+            <div class="modal-topo">
+
+                <div>
+                    <span class="modal-label">
+                        Movimentação
+                    </span>
+
+                    <h2 id="tituloModalTransacao">
+                        Nova transação
+                    </h2>
+
+                    <p>
+                        Preencha os dados da movimentação.
+                    </p>
+                </div>
+
+                <button
+                    id="fecharModalTransacao"
+                    class="btn-fechar-modal"
+                    type="button"
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+            </div>
+
+            <form id="formTransacao">
+
+                <div class="grupo-campo">
+
+                    <label for="tipo">Tipo</label>
+
+                    <div class="seletor-tipo">
+
+                        <button
+                            class="tipo-opcao receita"
+                            data-tipo="RECEITA"
+                            type="button"
+                        >
+                            <i class="fa-solid fa-arrow-down"></i>
+                            Receita
+                        </button>
+
+                        <button
+                            class="tipo-opcao despesa ativo"
+                            data-tipo="DESPESA"
+                            type="button"
+                        >
+                            <i class="fa-solid fa-arrow-up"></i>
+                            Despesa
+                        </button>
+
+                    </div>
+
+                    <input
+                        id="tipo"
+                        type="hidden"
+                        value="DESPESA"
+                    >
+
+                </div>
+
+                <div class="linha-campos">
+
+                    <div class="grupo-campo">
+
+                        <label for="valor">Valor</label>
+
+                        <div class="input-container">
+                            <span class="prefixo-valor">R$</span>
+
+                            <input
+                                id="valor"
+                                type="text"
+                                inputmode="decimal"
+                                placeholder="0,00"
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+                    <div class="grupo-campo">
+
+                        <label for="data">Data</label>
+
+                        <div class="input-container">
+                            <i class="fa-regular fa-calendar"></i>
+
+                            <input
+                                id="data"
+                                type="date"
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="grupo-campo">
+
+                    <label for="destinatario">
+                        Destinatário
+                    </label>
+
+                    <div class="input-container">
+                        <i class="fa-regular fa-user"></i>
+
+                        <input
+                            id="destinatario"
+                            type="text"
+                            placeholder="Ex: Supermercado, Empresa..."
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <div class="grupo-campo">
+
+                    <label for="descricao">
+                        Descrição
+                    </label>
+
+                    <div class="input-container">
+                        <i class="fa-regular fa-note-sticky"></i>
+
+                        <input
+                            id="descricao"
+                            type="text"
+                            placeholder="Descrição da movimentação"
+                        >
+                    </div>
+
+                </div>
+
+                <div class="grupo-campo">
+
+                    <label for="categoria">
+                        Categoria
+                    </label>
+
+                    <div class="input-container">
+                        <i class="fa-solid fa-tag"></i>
+
+                        <input
+                            id="categoria"
+                            type="text"
+                            placeholder="Ex: Alimentação"
+                        >
+                    </div>
+
+                </div>
+
+                <div class="acoes-modal">
+
+                    <button
+                        id="btnCancelarTransacao"
+                        class="btn-cancelar"
+                        type="button"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        class="btn-salvar"
+                        type="submit"
+                    >
+                        <i class="fa-solid fa-check"></i>
+
+                        <span id="textoBtnSalvar">
+                            Salvar transação
+                        </span>
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div
+        id="modalExcluir"
+        class="modal"
+    >
+
+        <div class="modal-conteudo modal-excluir">
+
+            <div class="icone-excluir">
+                <i class="fa-regular fa-trash-can"></i>
+            </div>
+
+            <h2>Excluir transação?</h2>
+
+            <p>
+                Essa ação não poderá ser desfeita.
+            </p>
+
+            <div class="acoes-excluir">
+
+                <button
+                    id="btnCancelarExclusao"
+                    class="btn-cancelar"
+                    type="button"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    id="btnConfirmarExclusao"
+                    class="btn-confirmar-exclusao"
+                    type="button"
+                >
+                    <i class="fa-regular fa-trash-can"></i>
+                    Excluir
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <button
+        id="btnSair"
+        type="button"
+        hidden
+    ></button>
+
+    <script src="transacoes.js"></script>
+    <script src="menu.js"></script>
+
+</body>
+
+</html>

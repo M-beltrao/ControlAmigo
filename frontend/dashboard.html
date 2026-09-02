@@ -5,9 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>ControlAmigo - Início</title>
+    <title>ControlAmigo - Visão geral</title>
 
+    <link rel="stylesheet" href="menu.css">
     <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="dashboard-header.css">
+    <link rel="stylesheet" href="dashboard-hero.css">
+    <link rel="stylesheet" href="dashboard-cards.css">
+    <link rel="stylesheet" href="dashboard-graficos.css">
 
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
@@ -22,864 +27,500 @@
 
 <body>
 
-<header class="header">
+    <div id="menuContainer"></div>
 
-    <div class="logo">
+    <div class="pagina">
 
-        <i class="fa-solid fa-wallet"></i>
+        <header class="header">
 
-        <h1>
-            Control<span>Amigo</span>
-        </h1>
+            <div class="header-titulo">
 
-    </div>
+                <h1>
+                    Bem-vindo(a)!
+                </h1>
 
-    <div class="usuario">
+                <p>
+                    Acompanhe suas finanças em um só lugar.
+                </p>
 
-        <button
-            id="btnPerfil"
-            class="btn-perfil"
-            type="button"
-        >
-            <i class="fa-solid fa-user"></i>
-            Meu perfil
-        </button>
-
-        <button
-            id="btnSair"
-            class="btn-sair"
-            type="button"
-        >
-            <i class="fa-solid fa-right-from-bracket"></i>
-            Sair
-        </button>
-
-    </div>
-
-</header>
-
-<main class="dashboard">
-
-    <section class="boas-vindas">
-
-        <div>
-
-            <h2 id="tituloUsuario">
-                Bem-vindo!
-            </h2>
-
-            <p>
-                Veja como estão suas finanças hoje.
-            </p>
-
-        </div>
-
-        <div class="acoes-dashboard">
-
-            <button
-                id="btnConectarBanco"
-                class="btn-conectar-banco"
-                type="button"
-            >
-                <i class="fa-solid fa-building-columns"></i>
-                Conectar banco
-            </button>
-
-            <button
-                id="btnSincronizarBanco"
-                class="btn-sincronizar"
-                type="button"
-            >
-                <i class="fa-solid fa-rotate"></i>
-                Sincronizar banco
-            </button>
-
-            <button
-                class="btn-transacao"
-                type="button"
-            >
-                <i class="fa-solid fa-plus"></i>
-                Nova transação
-            </button>
-
-        </div>
-
-    </section>
-
-    <section
-        id="bancoConectado"
-        class="banco-conectado"
-        style="display: none;"
-    >
-
-        <div class="banco-conectado-info">
-
-            <div class="banco-conectado-icone">
-                <i class="fa-solid fa-building-columns"></i>
             </div>
 
-            <div class="banco-conectado-dados">
+            <button
+                id="btnPerfil"
+                class="btn-perfil"
+                type="button"
+            >
 
-                <span class="banco-conectado-status">
-                    <i class="fa-solid fa-circle-check"></i>
-                    Banco conectado
+                <div class="perfil-mini-avatar">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+
+                <span>
+                    Meu perfil
                 </span>
 
-                <h3 id="nomeBancoConectado">
-                    Instituição financeira
-                </h3>
+                <i class="fa-solid fa-chevron-down perfil-seta"></i>
 
-                <p id="tipoContaConectada">
-                    Conta bancária
-                </p>
-
-            </div>
-
-        </div>
-
-        <div class="banco-conectado-acoes">
-
-            <button
-                id="btnAtualizarBanco"
-                class="btn-atualizar-banco"
-                type="button"
-            >
-                <i class="fa-solid fa-rotate"></i>
-                Sincronizar
             </button>
 
-            <button
-                id="btnDesconectarBanco"
-                class="btn-desconectar-banco"
-                type="button"
-            >
-                <i class="fa-solid fa-link-slash"></i>
-                Desconectar
-            </button>
+        </header>
 
-        </div>
+        <main class="dashboard">
 
-    </section>
+            <section class="boas-vindas">
 
-    <section class="resumo">
+                <div class="boas-vindas-conteudo">
 
-        <div class="card saldo">
+                    <div class="boas-vindas-icone">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
 
-            <div class="card-icon">
-                <i class="fa-solid fa-wallet"></i>
-            </div>
+                    <div>
 
-            <div>
+                        <span class="boas-vindas-label">
+                            Resumo financeiro
+                        </span>
 
-                <p>
-                    Saldo atual
-                </p>
+                        <h2 id="tituloUsuario">
+                            Olá!
+                        </h2>
 
-                <h3 id="saldo">
-                    R$ 0,00
-                </h3>
+                        <p>
+                            Veja como estão suas finanças hoje.
+                        </p>
 
-            </div>
+                    </div>
 
-        </div>
+                </div>
 
-        <div class="card receita">
+                <div class="boas-vindas-decoracao">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
 
-            <div class="card-icon">
-                <i class="fa-solid fa-arrow-trend-up"></i>
-            </div>
+            </section>
 
-            <div>
+            <section class="resumo">
 
-                <p>
-                    Receitas
-                </p>
+                <article class="card card-saldo">
 
-                <h3 id="receitas">
-                    R$ 0,00
-                </h3>
+                    <div class="card-cabecalho">
 
-            </div>
+                        <div class="card-icon saldo-icon">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
 
-        </div>
+                        <span class="card-label">
+                            Saldo atual
+                        </span>
 
-        <div class="card despesa">
+                    </div>
 
-            <div class="card-icon">
-                <i class="fa-solid fa-arrow-trend-down"></i>
-            </div>
+                    <h3 id="saldo">
+                        R$ 0,00
+                    </h3>
 
-            <div>
+                    <div class="card-rodape">
 
-                <p>
-                    Despesas
-                </p>
+                        <i class="fa-solid fa-circle-check"></i>
 
-                <h3 id="despesas">
-                    R$ 0,00
-                </h3>
+                        <span>
+                            Disponível atualmente
+                        </span>
 
-            </div>
+                    </div>
 
-        </div>
+                </article>
 
-    </section>
+                <article class="card">
 
-    <section class="conteudo">
+                    <div class="card-cabecalho">
 
-        <div class="transacoes">
+                        <div class="card-icon receita-icon">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </div>
 
-            <div class="titulo-secao">
+                        <span class="card-label">
+                            Receitas
+                        </span>
+
+                    </div>
+
+                    <h3 id="receitas">
+                        R$ 0,00
+                    </h3>
+
+                    <div class="card-rodape receita-texto">
+
+                        <i class="fa-solid fa-arrow-up"></i>
+
+                        <span>
+                            Total de entradas
+                        </span>
+
+                    </div>
+
+                </article>
+
+                <article class="card">
+
+                    <div class="card-cabecalho">
+
+                        <div class="card-icon despesa-icon">
+                            <i class="fa-solid fa-arrow-trend-down"></i>
+                        </div>
+
+                        <span class="card-label">
+                            Despesas
+                        </span>
+
+                    </div>
+
+                    <h3 id="despesas">
+                        R$ 0,00
+                    </h3>
+
+                    <div class="card-rodape despesa-texto">
+
+                        <i class="fa-solid fa-arrow-down"></i>
+
+                        <span>
+                            Total de saídas
+                        </span>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+            <section class="graficos">
+
+                <article class="grafico-card grafico-evolucao">
+
+                    <div class="grafico-topo">
+
+                        <div class="grafico-titulo">
+
+                            <div class="grafico-icon">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Evolução financeira
+                                </h3>
+
+                                <p>
+                                    Receitas e despesas dos últimos 6 meses
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="grafico-container">
+                        <canvas id="graficoEvolucao"></canvas>
+                    </div>
+
+                </article>
+
+                <article class="grafico-card grafico-categorias">
+
+                    <div class="grafico-topo">
+
+                        <div class="grafico-titulo">
+
+                            <div class="grafico-icon">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    Despesas por categoria
+                                </h3>
+
+                                <p>
+                                    Distribuição dos seus gastos
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="grafico-container grafico-rosca">
+                        <canvas id="graficoCategorias"></canvas>
+                    </div>
+
+                </article>
+
+            </section>
+
+            <section class="home-transacoes">
+
+                <div class="titulo-secao">
+
+                    <div class="titulo-secao-esquerda">
+
+                        <div class="titulo-secao-icon">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Últimas movimentações
+                            </h3>
+
+                            <p>
+                                Suas transações mais recentes
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <a
+                        href="transacoes.html"
+                        class="btn-ver-todas"
+                    >
+
+                        <span>
+                            Ver todas
+                        </span>
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+                <div
+                    id="listaTransacoes"
+                    class="lista-transacoes"
+                >
+
+                    <div class="sem-transacoes">
+
+                        <div class="sem-transacoes-icon">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+
+                        <h4>
+                            Nenhuma movimentação encontrada
+                        </h4>
+
+                        <p>
+                            Suas movimentações mais recentes aparecerão aqui.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <div
+        id="modalPerfil"
+        class="modal modal-perfil"
+    >
+
+        <div class="modal-perfil-conteudo">
+
+            <div class="perfil-topo">
 
                 <div>
 
-                    <h3>
-                        Transações recentes
+                    <span class="perfil-subtitulo">
+                        Sua conta
+                    </span>
+
+                    <h2>
+                        Meu perfil
+                    </h2>
+
+                    <p>
+                        Gerencie suas informações pessoais.
+                    </p>
+
+                </div>
+
+                <button
+                    id="fecharModalPerfil"
+                    class="fechar-modal"
+                    type="button"
+                    aria-label="Fechar perfil"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+            <div class="perfil-cabecalho">
+
+                <div class="perfil-avatar">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+
+                <div>
+
+                    <h3 id="perfilNomeExibicao">
+                        Usuário
                     </h3>
 
-                    <p>
-                        Acompanhe suas últimas movimentações
-                    </p>
-
-                </div>
-
-                <div class="acoes-transacoes">
-
-                    <button
-                        id="btnMostrarTodas"
-                        class="btn-ver-transacoes"
-                        type="button"
-                    >
-                        <i class="fa-solid fa-list"></i>
-                        Ver todas
-                    </button>
-
-                    <button
-                        id="btnLimparVisualizacao"
-                        class="btn-limpar-visualizacao"
-                        type="button"
-                    >
-                        <i class="fa-solid fa-broom"></i>
-                        Limpar visualização
-                    </button>
-
-                </div>
-
-            </div>
-
-            <div
-                id="listaTransacoes"
-                class="lista-transacoes"
-            >
-
-                <div class="sem-transacoes">
-
-                    <i class="fa-solid fa-receipt"></i>
-
-                    <h4>
-                        Nenhuma transação encontrada
-                    </h4>
-
-                    <p>
-                        Suas movimentações aparecerão aqui.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <aside class="resumo-lateral">
-
-            <h3>
-                Resumo financeiro
-            </h3>
-
-            <div class="resumo-item">
-
-                <span>
-                    Total recebido
-                </span>
-
-                <strong id="totalRecebido">
-                    R$ 0,00
-                </strong>
-
-            </div>
-
-            <div class="resumo-item">
-
-                <span>
-                    Total gasto
-                </span>
-
-                <strong id="totalGasto">
-                    R$ 0,00
-                </strong>
-
-            </div>
-
-            <div class="resumo-item">
-
-                <span>
-                    Saldo disponível
-                </span>
-
-                <strong id="saldoDisponivel">
-                    R$ 0,00
-                </strong>
-
-            </div>
-
-        </aside>
-
-    </section>
-
-    <section class="relatorio-financeiro">
-
-        <div class="relatorio-topo">
-
-            <div>
-
-                <h3>
-                    <i class="fa-solid fa-file-pdf"></i>
-                    Relatório financeiro
-                </h3>
-
-                <p>
-                    Consulte suas movimentações por mês e ano.
-                </p>
-
-            </div>
-
-        </div>
-
-        <div class="relatorio-filtros">
-
-            <div class="campo-relatorio">
-
-                <label for="relatorioMes">
-                    Mês
-                </label>
-
-                <select id="relatorioMes">
-
-                    <option value="1">
-                        Janeiro
-                    </option>
-
-                    <option value="2">
-                        Fevereiro
-                    </option>
-
-                    <option value="3">
-                        Março
-                    </option>
-
-                    <option value="4">
-                        Abril
-                    </option>
-
-                    <option value="5">
-                        Maio
-                    </option>
-
-                    <option value="6">
-                        Junho
-                    </option>
-
-                    <option value="7">
-                        Julho
-                    </option>
-
-                    <option value="8">
-                        Agosto
-                    </option>
-
-                    <option value="9">
-                        Setembro
-                    </option>
-
-                    <option value="10">
-                        Outubro
-                    </option>
-
-                    <option value="11">
-                        Novembro
-                    </option>
-
-                    <option value="12">
-                        Dezembro
-                    </option>
-
-                </select>
-
-            </div>
-
-            <div class="campo-relatorio">
-
-                <label for="relatorioAno">
-                    Ano
-                </label>
-
-                <select id="relatorioAno">
-                </select>
-
-            </div>
-
-            <button
-                id="btnGerarRelatorio"
-                class="btn-gerar-relatorio"
-                type="button"
-            >
-                <i class="fa-solid fa-file-arrow-down"></i>
-                Gerar relatório PDF
-            </button>
-
-        </div>
-
-    </section>
-
-</main>
-
-<div
-    id="modalTransacao"
-    class="modal"
->
-
-    <div class="modal-conteudo">
-
-        <div class="modal-topo">
-
-            <h2>
-                Nova transação
-            </h2>
-
-            <button
-                id="fecharModal"
-                class="fechar-modal"
-                type="button"
-            >
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-        </div>
-
-        <div class="tipo-transacao">
-
-            <button
-                type="button"
-                class="tipo-btn ativo"
-                data-tipo="DESPESA"
-            >
-                Despesa
-            </button>
-
-            <button
-                type="button"
-                class="tipo-btn"
-                data-tipo="RECEITA"
-            >
-                Receita
-            </button>
-
-        </div>
-
-        <div class="campo">
-
-            <label for="transacaoValor">
-                Valor
-            </label>
-
-            <input
-                type="text"
-                id="transacaoValor"
-                placeholder="R$ 0,00"
-                inputmode="numeric"
-                autocomplete="off"
-            >
-
-        </div>
-
-        <div class="campo">
-
-            <label for="transacaoDestinatario">
-                Destinatário / Origem
-            </label>
-
-            <input
-                type="text"
-                id="transacaoDestinatario"
-                placeholder="Ex: Mercado, salário, cliente..."
-            >
-
-        </div>
-
-        <div class="campo">
-
-            <label for="transacaoDescricao">
-                Descrição
-            </label>
-
-            <input
-                type="text"
-                id="transacaoDescricao"
-                placeholder="Ex: Compras da semana"
-            >
-
-        </div>
-
-        <div class="campo">
-
-            <label for="transacaoCategoria">
-                Categoria
-            </label>
-
-            <select id="transacaoCategoria">
-
-                <option value="">
-                    Selecione
-                </option>
-
-                <option value="Alimentação">
-                    Alimentação
-                </option>
-
-                <option value="Transporte">
-                    Transporte
-                </option>
-
-                <option value="Moradia">
-                    Moradia
-                </option>
-
-                <option value="Saúde">
-                    Saúde
-                </option>
-
-                <option value="Lazer">
-                    Lazer
-                </option>
-
-                <option value="Educação">
-                    Educação
-                </option>
-
-                <option value="Trabalho">
-                    Trabalho
-                </option>
-
-                <option value="Outros">
-                    Outros
-                </option>
-
-            </select>
-
-        </div>
-
-        <div class="campo">
-
-            <label for="transacaoData">
-                Data
-            </label>
-
-            <input
-                type="date"
-                id="transacaoData"
-            >
-
-        </div>
-
-        <div class="modal-acoes">
-
-            <button
-                id="cancelarTransacao"
-                class="btn-cancelar"
-                type="button"
-            >
-                Cancelar
-            </button>
-
-            <button
-                id="salvarTransacao"
-                class="btn-salvar"
-                type="button"
-            >
-                Salvar transação
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div
-    id="modalExcluir"
-    class="modal modal-excluir"
->
-
-    <div class="modal-excluir-conteudo">
-
-        <button
-            id="fecharModalExcluir"
-            class="fechar-modal excluir-fechar"
-            type="button"
-        >
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-
-        <div class="icone-excluir">
-            <i class="fa-solid fa-trash-can"></i>
-        </div>
-
-        <h2>
-            Excluir transação
-        </h2>
-
-        <p class="texto-excluir">
-
-            Tem certeza que deseja excluir esta transação?
-
-            <br>
-
-            <strong>
-                Esta ação não pode ser desfeita.
-            </strong>
-
-        </p>
-
-        <div class="transacao-excluir-info">
-
-            <div class="transacao-excluir-icone">
-                <i class="fa-solid fa-arrow-down"></i>
-            </div>
-
-            <div class="transacao-excluir-dados">
-
-                <strong id="nomeTransacaoExcluir">
-                    Transação
-                </strong>
-
-                <span id="descricaoTransacaoExcluir">
-                    Descrição
-                </span>
-
-            </div>
-
-            <strong
-                id="valorTransacaoExcluir"
-                class="valor-excluir"
-            >
-                -R$ 0,00
-            </strong>
-
-        </div>
-
-        <div class="acoes-excluir">
-
-            <button
-                id="cancelarExclusao"
-                class="btn-cancelar-exclusao"
-                type="button"
-            >
-                <i class="fa-solid fa-xmark"></i>
-                Cancelar
-            </button>
-
-            <button
-                id="confirmarExclusao"
-                class="btn-confirmar-exclusao"
-                type="button"
-            >
-                <i class="fa-solid fa-trash-can"></i>
-                Sim, excluir
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div
-    id="modalPerfil"
-    class="modal modal-perfil"
->
-
-    <div class="modal-perfil-conteudo">
-
-        <div class="perfil-topo">
-
-            <div>
-
-                <h2>
-                    Meu perfil
-                </h2>
-
-                <p>
-                    Gerencie suas informações pessoais.
-                </p>
-
-            </div>
-
-            <button
-                id="fecharModalPerfil"
-                class="fechar-modal"
-                type="button"
-            >
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-        </div>
-
-        <div class="perfil-cabecalho">
-
-            <div class="perfil-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>
-
-            <div>
-
-                <h3 id="perfilNomeExibicao">
-                    Usuário
-                </h3>
-
-                <span id="perfilUsernameExibicao">
-                    @username
-                </span>
-
-            </div>
-
-        </div>
-
-        <div class="perfil-campos">
-
-            <div class="campo">
-
-                <label for="perfilNome">
-                    Nome
-                </label>
-
-                <div class="perfil-input">
-
-                    <i class="fa-regular fa-user"></i>
-
-                    <input
-                        type="text"
-                        id="perfilNome"
-                        readonly
-                    >
-
-                </div>
-
-            </div>
-
-            <div class="campo">
-
-                <label for="perfilUsername">
-                    Username
-                </label>
-
-                <div class="perfil-input">
-
-                    <i class="fa-solid fa-at"></i>
-
-                    <input
-                        type="text"
-                        id="perfilUsername"
-                        readonly
-                    >
-
-                </div>
-
-            </div>
-
-            <div class="campo">
-
-                <div class="perfil-label-status">
-
-                    <label for="perfilEmail">
-                        E-mail
-                    </label>
-
-                    <span
-                        id="statusEmail"
-                        class="perfil-status"
-                    >
-                        Não verificado
+                    <span id="perfilUsernameExibicao">
+                        @usuario
                     </span>
 
                 </div>
 
-                <div class="perfil-input">
-
-                    <i class="fa-regular fa-envelope"></i>
-
-                    <input
-                        type="email"
-                        id="perfilEmail"
-                        readonly
-                    >
-
-                </div>
-
             </div>
 
-            <div class="campo">
+            <div class="perfil-campos">
 
-                <div class="perfil-label-status">
+                <div class="campo">
 
-                    <label for="perfilTelefone">
-                        Telefone
+                    <label for="perfilNome">
+                        Nome
                     </label>
 
-                    <span
-                        id="statusTelefone"
-                        class="perfil-status"
-                    >
-                        Não verificado
-                    </span>
+                    <div class="perfil-input">
+
+                        <i class="fa-regular fa-user"></i>
+
+                        <input
+                            type="text"
+                            id="perfilNome"
+                            readonly
+                        >
+
+                    </div>
 
                 </div>
 
-                <div class="perfil-input">
+                <div class="campo">
 
-                    <i class="fa-solid fa-phone"></i>
+                    <label for="perfilUsername">
+                        Username
+                    </label>
 
-                    <input
-                        type="text"
-                        id="perfilTelefone"
-                        placeholder="Nenhum telefone cadastrado"
-                        readonly
-                    >
+                    <div class="perfil-input">
+
+                        <i class="fa-solid fa-at"></i>
+
+                        <input
+                            type="text"
+                            id="perfilUsername"
+                            readonly
+                        >
+
+                    </div>
+
+                </div>
+
+                <div class="campo">
+
+                    <div class="perfil-label-status">
+
+                        <label for="perfilEmail">
+                            E-mail
+                        </label>
+
+                        <span
+                            id="statusEmail"
+                            class="perfil-status"
+                        >
+                            Não verificado
+                        </span>
+
+                    </div>
+
+                    <div class="perfil-input">
+
+                        <i class="fa-regular fa-envelope"></i>
+
+                        <input
+                            type="email"
+                            id="perfilEmail"
+                            readonly
+                        >
+
+                    </div>
+
+                </div>
+
+                <div class="campo">
+
+                    <div class="perfil-label-status">
+
+                        <label for="perfilTelefone">
+                            Telefone
+                        </label>
+
+                        <span
+                            id="statusTelefone"
+                            class="perfil-status"
+                        >
+                            Não verificado
+                        </span>
+
+                    </div>
+
+                    <div class="perfil-input">
+
+                        <i class="fa-solid fa-phone"></i>
+
+                        <input
+                            type="text"
+                            id="perfilTelefone"
+                            placeholder="Nenhum telefone cadastrado"
+                            readonly
+                        >
+
+                    </div>
 
                 </div>
 
             </div>
-
-        </div>
-
-        <div class="perfil-acoes">
 
             <button
                 id="btnEditarPerfil"
                 class="btn-editar-perfil"
                 type="button"
             >
+
                 <i class="fa-solid fa-pen"></i>
-                Editar perfil
+
+                <span>
+                    Editar perfil
+                </span>
+
             </button>
 
         </div>
 
     </div>
 
-</div>
+    <button
+        id="btnSair"
+        type="button"
+        hidden
+    ></button>
 
-<script src="https://cdn.pluggy.ai/pluggy-connect/v2.7.0/pluggy-connect.js"></script>
-<script src="dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="dashboard.js"></script>
+    <script src="menu.js"></script>
 
 </body>
 

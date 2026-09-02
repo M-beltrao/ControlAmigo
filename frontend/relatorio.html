@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ControlAmigo - Relatórios</title>
+
+    <link rel="stylesheet" href="menu.css">
+    <link rel="stylesheet" href="relatorio.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <div id="menuContainer"></div>
+
+    <div class="pagina">
+
+        <header class="header">
+
+            <div class="header-titulo">
+
+                <h1>
+                    Relatórios
+                </h1>
+
+                <p>
+                    Analise seu desempenho financeiro e gere relatórios mensais.
+                </p>
+
+            </div>
+
+            <button
+                id="btnGerarPdfTopo"
+                class="btn-gerar-pdf"
+                type="button"
+            >
+
+                <i class="fa-solid fa-file-pdf"></i>
+
+                <span>
+                    Gerar PDF
+                </span>
+
+            </button>
+
+        </header>
+
+        <main class="conteudo-relatorios">
+
+            <section class="hero-relatorios">
+
+                <div class="hero-conteudo">
+
+                    <span class="hero-label">
+                        Inteligência financeira
+                    </span>
+
+                    <h2>
+                        Entenda para onde seu dinheiro está indo.
+                    </h2>
+
+                    <p>
+                        Consulte seus resultados por período, acompanhe receitas e despesas e gere um relatório completo em PDF.
+                    </p>
+
+                    <div class="hero-indicadores">
+
+                        <div class="hero-indicador">
+
+                            <i class="fa-solid fa-chart-line"></i>
+
+                            <span>
+                                Análise mensal
+                            </span>
+
+                        </div>
+
+                        <div class="hero-indicador">
+
+                            <i class="fa-solid fa-file-arrow-down"></i>
+
+                            <span>
+                                Exportação em PDF
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="hero-ilustracao">
+
+                    <div class="grafico-decorativo">
+
+                        <span class="barra barra-1"></span>
+                        <span class="barra barra-2"></span>
+                        <span class="barra barra-3"></span>
+                        <span class="barra barra-4"></span>
+                        <span class="barra barra-5"></span>
+
+                    </div>
+
+                    <div class="hero-icon hero-icon-1">
+
+                        <i class="fa-solid fa-chart-pie"></i>
+
+                    </div>
+
+                    <div class="hero-icon hero-icon-2">
+
+                        <i class="fa-solid fa-coins"></i>
+
+                    </div>
+
+                    <div class="hero-icon hero-icon-3">
+
+                        <i class="fa-solid fa-file-pdf"></i>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="painel-periodo">
+
+                <div class="painel-periodo-topo">
+
+                    <div>
+
+                        <span class="secao-label">
+                            Período
+                        </span>
+
+                        <h3>
+                            Selecione o mês do relatório
+                        </h3>
+
+                        <p>
+                            Os dados abaixo serão atualizados de acordo com o período selecionado.
+                        </p>
+
+                    </div>
+
+                    <div class="periodo-selecionado">
+
+                        <i class="fa-regular fa-calendar"></i>
+
+                        <span id="textoPeriodoSelecionado">
+                            Mês atual
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="filtros-periodo">
+
+                    <div class="campo-periodo">
+
+                        <label for="mesRelatorio">
+                            Mês
+                        </label>
+
+                        <div class="select-container">
+
+                            <i class="fa-regular fa-calendar"></i>
+
+                            <select id="mesRelatorio">
+
+                                <option value="1">
+                                    Janeiro
+                                </option>
+
+                                <option value="2">
+                                    Fevereiro
+                                </option>
+
+                                <option value="3">
+                                    Março
+                                </option>
+
+                                <option value="4">
+                                    Abril
+                                </option>
+
+                                <option value="5">
+                                    Maio
+                                </option>
+
+                                <option value="6">
+                                    Junho
+                                </option>
+
+                                <option value="7">
+                                    Julho
+                                </option>
+
+                                <option value="8">
+                                    Agosto
+                                </option>
+
+                                <option value="9">
+                                    Setembro
+                                </option>
+
+                                <option value="10">
+                                    Outubro
+                                </option>
+
+                                <option value="11">
+                                    Novembro
+                                </option>
+
+                                <option value="12">
+                                    Dezembro
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="campo-periodo">
+
+                        <label for="anoRelatorio">
+                            Ano
+                        </label>
+
+                        <div class="select-container">
+
+                            <i class="fa-regular fa-calendar-days"></i>
+
+                            <select id="anoRelatorio"></select>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        id="btnAplicarPeriodo"
+                        class="btn-aplicar-periodo"
+                        type="button"
+                    >
+
+                        <i class="fa-solid fa-chart-simple"></i>
+
+                        <span>
+                            Atualizar relatório
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </section>
+
+            <section class="resumo-relatorio">
+
+                <article class="resumo-card">
+
+                    <div class="resumo-card-topo">
+
+                        <div class="resumo-icon receita-icon">
+
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+
+                        </div>
+
+                        <span>
+                            Receitas
+                        </span>
+
+                    </div>
+
+                    <strong
+                        id="relatorioReceitas"
+                        class="valor-receita"
+                    >
+                        R$ 0,00
+                    </strong>
+
+                    <p>
+                        Entradas no período
+                    </p>
+
+                </article>
+
+                <article class="resumo-card">
+
+                    <div class="resumo-card-topo">
+
+                        <div class="resumo-icon despesa-icon">
+
+                            <i class="fa-solid fa-arrow-trend-down"></i>
+
+                        </div>
+
+                        <span>
+                            Despesas
+                        </span>
+
+                    </div>
+
+                    <strong
+                        id="relatorioDespesas"
+                        class="valor-despesa"
+                    >
+                        R$ 0,00
+                    </strong>
+
+                    <p>
+                        Saídas no período
+                    </p>
+
+                </article>
+
+                <article class="resumo-card">
+
+                    <div class="resumo-card-topo">
+
+                        <div class="resumo-icon resultado-icon">
+
+                            <i class="fa-solid fa-scale-balanced"></i>
+
+                        </div>
+
+                        <span>
+                            Resultado
+                        </span>
+
+                    </div>
+
+                    <strong id="relatorioResultado">
+                        R$ 0,00
+                    </strong>
+
+                    <p>
+                        Receitas menos despesas
+                    </p>
+
+                </article>
+
+                <article class="resumo-card">
+
+                    <div class="resumo-card-topo">
+
+                        <div class="resumo-icon movimentacoes-icon">
+
+                            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+
+                        </div>
+
+                        <span>
+                            Movimentações
+                        </span>
+
+                    </div>
+
+                    <strong id="relatorioQuantidade">
+                        0
+                    </strong>
+
+                    <p>
+                        Transações no período
+                    </p>
+
+                </article>
+
+            </section>
+
+            <section class="grade-relatorio">
+
+                <article class="grafico-card grafico-categorias">
+
+                    <div class="card-topo">
+
+                        <div>
+
+                            <span class="secao-label">
+                                Distribuição
+                            </span>
+
+                            <h3>
+                                Despesas por categoria
+                            </h3>
+
+                            <p>
+                                Veja quais categorias mais impactaram seus gastos.
+                            </p>
+
+                        </div>
+
+                        <div class="card-topo-icon">
+
+                            <i class="fa-solid fa-chart-pie"></i>
+
+                        </div>
+
+                    </div>
+
+                    <div class="grafico-container">
+
+                        <canvas id="graficoCategoriasRelatorio"></canvas>
+
+                    </div>
+
+                    <div
+                        id="semDadosGrafico"
+                        class="sem-dados-grafico"
+                    >
+
+                        <div class="sem-dados-icon">
+
+                            <i class="fa-solid fa-chart-pie"></i>
+
+                        </div>
+
+                        <h4>
+                            Sem despesas neste período
+                        </h4>
+
+                        <p>
+                            Quando houver despesas, a distribuição aparecerá aqui.
+                        </p>
+
+                    </div>
+
+                </article>
+
+                <article class="analise-card">
+
+                    <div class="card-topo">
+
+                        <div>
+
+                            <span class="secao-label">
+                                Resumo
+                            </span>
+
+                            <h3>
+                                Análise do período
+                            </h3>
+
+                            <p>
+                                Uma leitura rápida dos seus resultados.
+                            </p>
+
+                        </div>
+
+                        <div class="card-topo-icon">
+
+                            <i class="fa-solid fa-lightbulb"></i>
+
+                        </div>
+
+                    </div>
+
+                    <div class="analise-conteudo">
+
+                        <div class="analise-item">
+
+                            <div class="analise-item-icon">
+
+                                <i class="fa-solid fa-arrow-trend-up"></i>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    Maior receita
+                                </span>
+
+                                <strong id="maiorReceita">
+                                    R$ 0,00
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                        <div class="analise-item">
+
+                            <div class="analise-item-icon despesa">
+
+                                <i class="fa-solid fa-arrow-trend-down"></i>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    Maior despesa
+                                </span>
+
+                                <strong id="maiorDespesa">
+                                    R$ 0,00
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                        <div class="analise-item">
+
+                            <div class="analise-item-icon categoria">
+
+                                <i class="fa-solid fa-tag"></i>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    Categoria com maior gasto
+                                </span>
+
+                                <strong id="categoriaMaiorGasto">
+                                    Sem dados
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                        <div class="analise-item">
+
+                            <div class="analise-item-icon media">
+
+                                <i class="fa-solid fa-calculator"></i>
+
+                            </div>
+
+                            <div>
+
+                                <span>
+                                    Média por movimentação
+                                </span>
+
+                                <strong id="mediaMovimentacoes">
+                                    R$ 0,00
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+            <section class="movimentacoes-relatorio">
+
+                <div class="movimentacoes-topo">
+
+                    <div>
+
+                        <span class="secao-label">
+                            Detalhamento
+                        </span>
+
+                        <h3>
+                            Movimentações do período
+                        </h3>
+
+                        <p>
+                            Todas as receitas e despesas incluídas neste relatório.
+                        </p>
+
+                    </div>
+
+                    <div
+                        id="contadorMovimentacoesRelatorio"
+                        class="contador-relatorio"
+                    >
+                        0 movimentações
+                    </div>
+
+                </div>
+
+                <div
+                    id="listaMovimentacoesRelatorio"
+                    class="lista-movimentacoes-relatorio"
+                >
+
+                    <div class="estado-carregando">
+
+                        <div class="loader-relatorio"></div>
+
+                        <span>
+                            Carregando relatório...
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <button
+                    id="btnMostrarMaisRelatorio"
+                    class="btn-mostrar-mais"
+                    type="button"
+                >
+
+                    <span>
+                        Mostrar mais
+                    </span>
+
+                    <i class="fa-solid fa-chevron-down"></i>
+
+                </button>
+
+            </section>
+
+            <section class="exportar-relatorio">
+
+                <div class="exportar-icon">
+
+                    <i class="fa-solid fa-file-pdf"></i>
+
+                </div>
+
+                <div class="exportar-texto">
+
+                    <span>
+                        Exportação
+                    </span>
+
+                    <h3>
+                        Leve seu relatório com você
+                    </h3>
+
+                    <p>
+                        Gere um arquivo PDF com as movimentações do mês selecionado para guardar ou compartilhar.
+                    </p>
+
+                </div>
+
+                <button
+                    id="btnGerarPdf"
+                    class="btn-exportar-pdf"
+                    type="button"
+                >
+
+                    <i class="fa-solid fa-download"></i>
+
+                    <span>
+                        Baixar relatório em PDF
+                    </span>
+
+                </button>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <button
+        id="btnSair"
+        type="button"
+        hidden
+    ></button>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="relatorio.js"></script>
+    <script src="menu.js"></script>
+
+</body>
+
+</html>

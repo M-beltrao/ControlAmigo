@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ControlAmigo - Contas bancárias</title>
+
+    <link rel="stylesheet" href="menu.css">
+    <link rel="stylesheet" href="contas.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <div id="menuContainer"></div>
+
+    <div class="pagina">
+
+        <header class="header">
+
+            <div class="header-titulo">
+
+                <h1>
+                    Contas bancárias
+                </h1>
+
+                <p>
+                    Conecte e acompanhe suas contas em um só lugar.
+                </p>
+
+            </div>
+
+            <button
+                id="btnConectarBanco"
+                class="btn-conectar-banco"
+                type="button"
+            >
+
+                <i class="fa-solid fa-plus"></i>
+
+                <span>
+                    Conectar conta
+                </span>
+
+            </button>
+
+        </header>
+
+        <main class="conteudo-contas">
+
+            <section class="hero-contas">
+
+                <div class="hero-conteudo">
+
+                    <span class="hero-label">
+                        Open Finance
+                    </span>
+
+                    <h2>
+                        Seu dinheiro, conectado.
+                    </h2>
+
+                    <p>
+                        Centralize suas contas bancárias e acompanhe seus saldos e movimentações no ControlAmigo.
+                    </p>
+
+                    <div class="hero-status">
+
+                        <div class="status-seguranca">
+
+                            <i class="fa-solid fa-shield-halved"></i>
+
+                            <span>
+                                Conexão segura
+                            </span>
+
+                        </div>
+
+                        <div class="status-seguranca">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                            <span>
+                                Seus dados protegidos
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="hero-ilustracao">
+
+                    <div class="orbita orbita-1"></div>
+                    <div class="orbita orbita-2"></div>
+
+                    <div class="icone-central">
+
+                        <i class="fa-solid fa-building-columns"></i>
+
+                    </div>
+
+                    <div class="icone-flutuante icone-flutuante-1">
+
+                        <i class="fa-solid fa-credit-card"></i>
+
+                    </div>
+
+                    <div class="icone-flutuante icone-flutuante-2">
+
+                        <i class="fa-solid fa-wallet"></i>
+
+                    </div>
+
+                    <div class="icone-flutuante icone-flutuante-3">
+
+                        <i class="fa-solid fa-chart-line"></i>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="resumo-contas">
+
+                <article class="resumo-card">
+
+                    <div class="resumo-card-topo">
+
+                        <div class="resumo-icon saldo-icon">
+
+                            <i class="fa-solid fa-wallet"></i>
+
+                        </div>
+
+                        <span>
+                            Saldo conectado
+                        </span>
+
+                    </div>
+
+                    <strong id="saldoTotalBancos">
+                        R$ 0,00
+                    </strong>
+
+                    <p>
+                        Soma das contas conectadas
+                    </p>
+
+                </article>
+
+                <article class="resumo-card">
+
+                    <div class="resumo-card-topo">
+
+                        <div class="resumo-icon conta-icon">
+
+                            <i class="fa-solid fa-building-columns"></i>
+
+                        </div>
+
+                        <span>
+                            Contas conectadas
+                        </span>
+
+                    </div>
+
+                    <strong id="quantidadeContas">
+                        0
+                    </strong>
+
+                    <p>
+                        Instituições sincronizadas
+                    </p>
+
+                </article>
+
+                <article class="resumo-card">
+
+                    <div class="resumo-card-topo">
+
+                        <div class="resumo-icon sincronizacao-icon">
+
+                            <i class="fa-solid fa-arrows-rotate"></i>
+
+                        </div>
+
+                        <span>
+                            Sincronização
+                        </span>
+
+                    </div>
+
+                    <strong class="status-sincronizacao">
+                        Ativa
+                    </strong>
+
+                    <p id="textoUltimaSincronizacao">
+                        Dados atualizados automaticamente
+                    </p>
+
+                </article>
+
+            </section>
+
+            <section class="painel-contas">
+
+                <div class="painel-topo">
+
+                    <div>
+
+                        <span class="painel-label">
+                            Minhas conexões
+                        </span>
+
+                        <h3>
+                            Contas conectadas
+                        </h3>
+
+                        <p>
+                            Consulte e gerencie suas instituições bancárias.
+                        </p>
+
+                    </div>
+
+                    <button
+                        id="btnSincronizarContas"
+                        class="btn-sincronizar"
+                        type="button"
+                    >
+
+                        <i class="fa-solid fa-arrows-rotate"></i>
+
+                        <span>
+                            Sincronizar
+                        </span>
+
+                    </button>
+
+                </div>
+
+                <div
+                    id="listaContas"
+                    class="lista-contas"
+                >
+
+                    <div class="estado-carregando">
+
+                        <div class="loader-contas"></div>
+
+                        <span>
+                            Carregando suas contas...
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="seguranca-contas">
+
+                <div class="seguranca-icon">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                </div>
+
+                <div class="seguranca-texto">
+
+                    <span>
+                        Segurança
+                    </span>
+
+                    <h3>
+                        Seus dados bancários continuam protegidos
+                    </h3>
+
+                    <p>
+                        O ControlAmigo utiliza a integração bancária apenas para consultar informações autorizadas por você. Sua senha bancária não é armazenada pelo sistema.
+                    </p>
+
+                </div>
+
+                <div class="seguranca-selo">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <span>
+                        Protegido
+                    </span>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <div
+        id="modalDesconectar"
+        class="modal"
+    >
+
+        <div class="modal-conteudo modal-desconectar">
+
+            <div class="modal-icon">
+
+                <i class="fa-solid fa-link-slash"></i>
+
+            </div>
+
+            <h2>
+                Desconectar conta?
+            </h2>
+
+            <p>
+                A instituição será removida do ControlAmigo. Você poderá conectá-la novamente quando quiser.
+            </p>
+
+            <div class="acoes-modal">
+
+                <button
+                    id="btnCancelarDesconexao"
+                    class="btn-cancelar"
+                    type="button"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    id="btnConfirmarDesconexao"
+                    class="btn-confirmar-desconexao"
+                    type="button"
+                >
+
+                    <i class="fa-solid fa-link-slash"></i>
+
+                    <span>
+                        Desconectar
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <button
+        id="btnSair"
+        type="button"
+        hidden
+    ></button>
+
+    <script src="https://cdn.pluggy.ai/pluggy-connect/v2.8.0/pluggy-connect.js"></script>
+    <script src="contas.js"></script>
+    <script src="menu.js"></script>
+
+</body>
+
+</html>

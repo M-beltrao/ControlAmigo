@@ -1,13 +1,12 @@
 const nomeUsuario = localStorage.getItem("usuarioNome");
 const usuarioId = localStorage.getItem("usuarioId");
-const usuarioUsername = localStorage.getItem("usuarioUsername");
 
 const API_URL = "https://controlamigo-2.onrender.com";
 
 let saldoBancarioAtual = null;
 let transacoesCarregadas = [];
-let mostrarTodasTransacoes = false;
-let visualizacaoLimpa = false;
+let graficoEvolucaoInstancia = null;
+let graficoCategoriasInstancia = null;
 
 if (!usuarioId) {
     window.location.href = "index.html";
@@ -27,76 +26,130 @@ function obterNomeCurto(nomeCompleto) {
     return nomes[0] + " " + nomes[1];
 }
 
-if (nomeUsuario) {
-    const nomeCurto = obterNomeCurto(nomeUsuario);
+function atualizarNomeUsuario(nome) {
+    const tituloUsuario = document.getElementById("tituloUsuario");
 
-    const tituloUsuario =
-        document.getElementById("tituloUsuario");
-
-    if (tituloUsuario) {
-        tituloUsuario.textContent =
-            "Olá, " + nomeCurto + "!";
+    if (!tituloUsuario || !nome) {
+        return;
     }
+
+    tituloUsuario.textContent = `Olá, ${obterNomeCurto(nome)}!`;
+}
+
+if (nomeUsuario) {
+    atualizarNomeUsuario(nomeUsuario);
 }
 
 function formatarMoeda(valor) {
-    return Number(valor).toLocaleString("pt-BR", {
+    return Number(valor || 0).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL"
     });
 }
 
-function carregarTransacoes() {
-    fetch(
-        `${API_URL}/transacoes/usuario/${usuarioId}`
-    )
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(
-                    "Erro ao buscar transações"
-                );
-            }
+function formatarData(dataTransacao) {
+    if (!dataTransacao) {
+        return "Data não informada";
+    }
 
-            return response.json();
-        })
-        .then(transacoes => {
-            transacoesCarregadas =
-                Array.isArray(transacoes)
-                    ? transacoes
-                    : [];
+    const partes = String(dataTransacao).split("-");
 
-            atualizarResumo(
-                transacoesCarregadas
-            );
+    if (partes.length < 3) {
+        return dataTransacao;
+    }
 
-            mostrarTransacoes();
-        })
-        .catch(error => {
-            console.error(
-                "Erro ao carregar transações:",
-                error
-            );
-        });
+    const ano = Number(partes[0]);
+    const mes = Number(partes[1]) - 1;
+    const dia = Number(String(partes[2]).substring(0, 2));
+
+    const data = new Date(ano, mes, dia);
+
+    if (Number.isNaN(data.getTime())) {
+        return dataTransacao;
+    }
+
+    return data.toLocaleDateString("pt-BR");
+}
+
+async function carregarSaldoBancario() {
+    try {
+        const responseContas = await fetch(
+            `${API_URL}/contas-bancarias/usuario/${usuarioId}`
+        );
+
+        if (!responseContas.ok) {
+            throw new Error("Não foi possível verificar as contas bancárias.");
+        }
+
+        const contas = await responseContas.json();
+
+        if (!Array.isArray(contas) || contas.length === 0) {
+            saldoBancarioAtual = null;
+            await carregarTransacoes();
+            return;
+        }
+
+        const responseSaldo = await fetch(
+            `${API_URL}/contas-bancarias/usuario/${usuarioId}/saldo`
+        );
+
+        if (!responseSaldo.ok) {
+            throw new Error("Não foi possível carregar o saldo bancário.");
+        }
+
+        const dadosSaldo = await responseSaldo.json();
+
+        saldoBancarioAtual = Number(dadosSaldo.saldo || 0);
+
+        await carregarTransacoes();
+
+    } catch (error) {
+        console.error("Erro ao carregar saldo bancário:", error);
+
+        saldoBancarioAtual = null;
+
+        await carregarTransacoes();
+    }
+}
+
+async function carregarTransacoes() {
+    try {
+        const response = await fetch(
+            `${API_URL}/transacoes/usuario/${usuarioId}`
+        );
+
+        if (!response.ok) {
+            throw new Error("Erro ao buscar transações");
+        }
+
+        const transacoes = await response.json();
+
+        transacoesCarregadas = Array.isArray(transacoes)
+            ? transacoes
+            : [];
+
+        atualizarResumo(transacoesCarregadas);
+        mostrarUltimasTransacoes();
+        atualizarGraficos(transacoesCarregadas);
+
+    } catch (error) {
+        console.error("Erro ao carregar transações:", error);
+    }
 }
 
 function atualizarResumo(transacoes) {
     let totalReceitas = 0;
     let totalDespesas = 0;
-
     let receitasManuais = 0;
     let despesasManuais = 0;
 
     transacoes.forEach(transacao => {
-        const valor =
-            Number(transacao.valor);
+        const valor = Number(transacao.valor || 0);
 
         if (transacao.tipo === "RECEITA") {
             totalReceitas += valor;
 
-            if (
-                transacao.origem ===
-                "MANUAL"
-            ) {
+            if (transacao.origem === "MANUAL") {
                 receitasManuais += valor;
             }
         }
@@ -104,266 +157,406 @@ function atualizarResumo(transacoes) {
         if (transacao.tipo === "DESPESA") {
             totalDespesas += valor;
 
-            if (
-                transacao.origem ===
-                "MANUAL"
-            ) {
+            if (transacao.origem === "MANUAL") {
                 despesasManuais += valor;
             }
         }
     });
 
-    const saldoCalculado =
-        totalReceitas -
-        totalDespesas;
+    const saldoCalculado = totalReceitas - totalDespesas;
 
-    let saldoAtual;
+    const saldoAtual =
+        saldoBancarioAtual !== null
+            ? saldoBancarioAtual + receitasManuais - despesasManuais
+            : saldoCalculado;
 
-    if (saldoBancarioAtual !== null) {
-        saldoAtual =
-            saldoBancarioAtual +
-            receitasManuais -
-            despesasManuais;
-    } else {
-        saldoAtual =
-            saldoCalculado;
-    }
-
-    const receitas =
-        document.getElementById(
-            "receitas"
-        );
-
-    const despesas =
-        document.getElementById(
-            "despesas"
-        );
-
-    const saldo =
-        document.getElementById(
-            "saldo"
-        );
-
-    const totalRecebido =
-        document.getElementById(
-            "totalRecebido"
-        );
-
-    const totalGasto =
-        document.getElementById(
-            "totalGasto"
-        );
-
-    const saldoDisponivel =
-        document.getElementById(
-            "saldoDisponivel"
-        );
+    const receitas = document.getElementById("receitas");
+    const despesas = document.getElementById("despesas");
+    const saldo = document.getElementById("saldo");
 
     if (receitas) {
-        receitas.textContent =
-            formatarMoeda(
-                totalReceitas
-            );
+        receitas.textContent = formatarMoeda(totalReceitas);
     }
 
     if (despesas) {
-        despesas.textContent =
-            formatarMoeda(
-                totalDespesas
-            );
+        despesas.textContent = formatarMoeda(totalDespesas);
     }
 
     if (saldo) {
-        saldo.textContent =
-            formatarMoeda(
-                saldoAtual
-            );
-    }
-
-    if (totalRecebido) {
-        totalRecebido.textContent =
-            formatarMoeda(
-                totalReceitas
-            );
-    }
-
-    if (totalGasto) {
-        totalGasto.textContent =
-            formatarMoeda(
-                totalDespesas
-            );
-    }
-
-    if (saldoDisponivel) {
-        saldoDisponivel.textContent =
-            formatarMoeda(
-                saldoAtual
-            );
+        saldo.textContent = formatarMoeda(saldoAtual);
     }
 }
 
-async function carregarSaldoBancario() {
-    try {
-        const responseContas =
-            await fetch(
-                `${API_URL}/contas-bancarias/usuario/${usuarioId}`
-            );
+function atualizarGraficos(transacoes) {
+    criarGraficoEvolucao(transacoes);
+    criarGraficoCategorias(transacoes);
+}
 
-        if (!responseContas.ok) {
-            throw new Error(
-                "Não foi possível verificar as contas bancárias."
-            );
-        }
+function obterUltimosSeisMeses() {
+    const meses = [];
+    const hoje = new Date();
 
-        const contas =
-            await responseContas.json();
+    for (let i = 5; i >= 0; i--) {
+        const data = new Date(
+            hoje.getFullYear(),
+            hoje.getMonth() - i,
+            1
+        );
 
-        if (
-            !Array.isArray(contas) ||
-            contas.length === 0
-        ) {
-            saldoBancarioAtual =
-                null;
+        meses.push({
+            ano: data.getFullYear(),
+            mes: data.getMonth(),
+            label: data.toLocaleDateString("pt-BR", {
+                month: "short"
+            }).replace(".", "")
+        });
+    }
 
-            carregarTransacoes();
+    return meses;
+}
 
+function criarGraficoEvolucao(transacoes) {
+    const canvas = document.getElementById("graficoEvolucao");
+
+    if (!canvas || typeof Chart === "undefined") {
+        return;
+    }
+
+    const meses = obterUltimosSeisMeses();
+
+    const receitas = meses.map(() => 0);
+    const despesas = meses.map(() => 0);
+
+    transacoes.forEach(transacao => {
+        if (!transacao.data) {
             return;
         }
 
-        const responseSaldo =
-            await fetch(
-                `${API_URL}/contas-bancarias/usuario/${usuarioId}/saldo`
-            );
+        const partes = String(transacao.data).split("-");
 
-        if (!responseSaldo.ok) {
-            throw new Error(
-                "Não foi possível carregar o saldo bancário."
-            );
+        if (partes.length < 2) {
+            return;
         }
 
-        const dadosSaldo =
-            await responseSaldo.json();
+        const ano = Number(partes[0]);
+        const mes = Number(partes[1]) - 1;
+        const valor = Number(transacao.valor || 0);
 
-        saldoBancarioAtual =
-            Number(
-                dadosSaldo.saldo
-            );
-
-        carregarTransacoes();
-
-    } catch (error) {
-        console.error(
-            "Erro ao carregar saldo bancário:",
-            error
+        const indice = meses.findIndex(
+            item =>
+                item.ano === ano &&
+                item.mes === mes
         );
 
-        saldoBancarioAtual =
-            null;
+        if (indice === -1) {
+            return;
+        }
 
-        carregarTransacoes();
+        if (transacao.tipo === "RECEITA") {
+            receitas[indice] += valor;
+        }
+
+        if (transacao.tipo === "DESPESA") {
+            despesas[indice] += valor;
+        }
+    });
+
+    if (graficoEvolucaoInstancia) {
+        graficoEvolucaoInstancia.destroy();
     }
-}
 
-const btnMostrarTodas =
-    document.getElementById(
-        "btnMostrarTodas"
-    );
+    graficoEvolucaoInstancia = new Chart(canvas, {
+        type: "line",
 
-const btnLimparVisualizacao =
-    document.getElementById(
-        "btnLimparVisualizacao"
-    );
+        data: {
+            labels: meses.map(item => item.label),
 
-function atualizarBotoesVisualizacao() {
-    if (btnMostrarTodas) {
-        if (visualizacaoLimpa) {
-            btnMostrarTodas.style.display =
-                "none";
-        } else {
-            btnMostrarTodas.style.display =
-                "flex";
+            datasets: [
+                {
+                    label: "Receitas",
+                    data: receitas,
+                    borderColor: "#27ad75",
+                    backgroundColor: "rgba(39, 173, 117, 0.10)",
+                    pointBackgroundColor: "#27ad75",
+                    pointBorderColor: "#ffffff",
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true
+                },
+                {
+                    label: "Despesas",
+                    data: despesas,
+                    borderColor: "#df5c62",
+                    backgroundColor: "rgba(223, 92, 98, 0.08)",
+                    pointBackgroundColor: "#df5c62",
+                    pointBorderColor: "#ffffff",
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true
+                }
+            ]
+        },
 
-            if (mostrarTodasTransacoes) {
-                btnMostrarTodas.innerHTML = `
-                    <i class="fa-solid fa-list"></i>
-                    Ver menos
-                `;
-            } else {
-                btnMostrarTodas.innerHTML = `
-                    <i class="fa-solid fa-list"></i>
-                    Ver todas
-                `;
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+
+            plugins: {
+                legend: {
+                    position: "top",
+                    align: "end",
+
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: "circle",
+                        boxWidth: 9,
+                        boxHeight: 9,
+                        padding: 20,
+                        color: "#718397",
+
+                        font: {
+                            family: "Poppins",
+                            size: 12
+                        }
+                    }
+                },
+
+                tooltip: {
+                    backgroundColor: "#12385d",
+                    padding: 12,
+                    titleFont: {
+                        family: "Poppins",
+                        size: 12
+                    },
+                    bodyFont: {
+                        family: "Poppins",
+                        size: 12
+                    },
+
+                    callbacks: {
+                        label: contexto => {
+                            return `${contexto.dataset.label}: ${formatarMoeda(contexto.raw)}`;
+                        }
+                    }
+                }
+            },
+
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+
+                    ticks: {
+                        color: "#718397",
+
+                        font: {
+                            family: "Poppins",
+                            size: 11
+                        }
+                    },
+
+                    border: {
+                        display: false
+                    }
+                },
+
+                y: {
+                    beginAtZero: true,
+
+                    grid: {
+                        color: "rgba(18, 56, 93, 0.06)"
+                    },
+
+                    ticks: {
+                        color: "#718397",
+
+                        font: {
+                            family: "Poppins",
+                            size: 11
+                        },
+
+                        callback: valor => {
+                            return Number(valor).toLocaleString(
+                                "pt-BR",
+                                {
+                                    notation: "compact",
+                                    maximumFractionDigits: 1
+                                }
+                            );
+                        }
+                    },
+
+                    border: {
+                        display: false
+                    }
+                }
             }
         }
+    });
+}
+
+function criarGraficoCategorias(transacoes) {
+    const canvas = document.getElementById("graficoCategorias");
+
+    if (!canvas || typeof Chart === "undefined") {
+        return;
     }
 
-    if (btnLimparVisualizacao) {
-        if (visualizacaoLimpa) {
-            btnLimparVisualizacao.innerHTML = `
-                <i class="fa-solid fa-eye"></i>
-                Mostrar transações
-            `;
-        } else {
-            btnLimparVisualizacao.innerHTML = `
-                <i class="fa-solid fa-broom"></i>
-                Limpar visualização
-            `;
+    const categorias = {};
+
+    transacoes.forEach(transacao => {
+        if (transacao.tipo !== "DESPESA") {
+            return;
         }
+
+        const categoria =
+            transacao.categoria &&
+            String(transacao.categoria).trim() !== ""
+                ? transacao.categoria
+                : "Outros";
+
+        categorias[categoria] =
+            (categorias[categoria] || 0) +
+            Number(transacao.valor || 0);
+    });
+
+    const entradas = Object.entries(categorias)
+        .sort((a, b) => b[1] - a[1]);
+
+    let labels = entradas.map(item => item[0]);
+    let valores = entradas.map(item => item[1]);
+
+    if (labels.length === 0) {
+        labels = ["Sem despesas"];
+        valores = [1];
     }
-}
 
-if (btnMostrarTodas) {
-    btnMostrarTodas.addEventListener(
-        "click",
-        () => {
-            mostrarTodasTransacoes =
-                !mostrarTodasTransacoes;
+    const paleta = [
+        "#2787d5",
+        "#27ad75",
+        "#f1a84b",
+        "#8d72d9",
+        "#df5c62",
+        "#4aa9b8",
+        "#77889b",
+        "#e47cac"
+    ];
 
-            mostrarTransacoes();
+    if (graficoCategoriasInstancia) {
+        graficoCategoriasInstancia.destroy();
+    }
+
+    graficoCategoriasInstancia = new Chart(canvas, {
+        type: "doughnut",
+
+        data: {
+            labels,
+
+            datasets: [
+                {
+                    data: valores,
+
+                    backgroundColor:
+                        labels[0] === "Sem despesas"
+                            ? ["#e4ebf0"]
+                            : labels.map(
+                                (_, indice) =>
+                                    paleta[indice % paleta.length]
+                            ),
+
+                    borderColor: "#ffffff",
+                    borderWidth: 3,
+                    hoverOffset: 6
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "70%",
+
+            plugins: {
+                legend: {
+                    position: "bottom",
+
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: "circle",
+                        boxWidth: 9,
+                        boxHeight: 9,
+                        padding: 17,
+                        color: "#718397",
+
+                        font: {
+                            family: "Poppins",
+                            size: 11
+                        }
+                    }
+                },
+
+                tooltip: {
+                    backgroundColor: "#12385d",
+                    padding: 12,
+
+                    titleFont: {
+                        family: "Poppins",
+                        size: 12
+                    },
+
+                    bodyFont: {
+                        family: "Poppins",
+                        size: 12
+                    },
+
+                    callbacks: {
+                        label: contexto => {
+                            if (labels[0] === "Sem despesas") {
+                                return "Nenhuma despesa registrada";
+                            }
+
+                            return `${contexto.label}: ${formatarMoeda(contexto.raw)}`;
+                        }
+                    }
+                }
+            }
         }
-    );
+    });
 }
 
-if (btnLimparVisualizacao) {
-    btnLimparVisualizacao.addEventListener(
-        "click",
-        () => {
-            visualizacaoLimpa =
-                !visualizacaoLimpa;
-
-            mostrarTransacoes();
-        }
-    );
-}
-
-function mostrarTransacoes() {
-    const lista =
-        document.getElementById(
-            "listaTransacoes"
-        );
+function mostrarUltimasTransacoes() {
+    const lista = document.getElementById("listaTransacoes");
 
     if (!lista) {
         return;
     }
 
-    atualizarBotoesVisualizacao();
-
     lista.innerHTML = "";
 
-    if (visualizacaoLimpa) {
+    if (transacoesCarregadas.length === 0) {
         lista.innerHTML = `
             <div class="sem-transacoes">
 
-                <i class="fa-solid fa-eye-slash"></i>
+                <div class="sem-transacoes-icon">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
 
-                <h4>
-                    Visualização limpa
-                </h4>
+                <h4>Nenhuma movimentação encontrada</h4>
 
                 <p>
-                    Suas transações continuam salvas.
-                    Clique em "Mostrar transações"
-                    para visualizá-las novamente.
+                    Suas movimentações mais recentes aparecerão aqui.
                 </p>
 
             </div>
@@ -372,1049 +565,164 @@ function mostrarTransacoes() {
         return;
     }
 
-    if (
-        transacoesCarregadas.length ===
-        0
-    ) {
-        lista.innerHTML = `
-            <div class="sem-transacoes">
+    const transacoesOrdenadas = [...transacoesCarregadas].sort(
+        (a, b) => {
+            const dataA = a.data
+                ? new Date(String(a.data).substring(0, 10))
+                : new Date(0);
 
-                <i class="fa-solid fa-receipt"></i>
+            const dataB = b.data
+                ? new Date(String(b.data).substring(0, 10))
+                : new Date(0);
 
-                <h4>
-                    Nenhuma transação encontrada
-                </h4>
+            return dataB - dataA;
+        }
+    );
 
-                <p>
-                    Suas movimentações aparecerão aqui.
-                </p>
+    const ultimasTransacoes = transacoesOrdenadas.slice(0, 5);
+
+    ultimasTransacoes.forEach(transacao => {
+        const item = document.createElement("div");
+
+        item.classList.add("transacao-item");
+
+        const receita = transacao.tipo === "RECEITA";
+
+        const sinal = receita ? "+" : "-";
+
+        const icone = receita
+            ? "fa-arrow-down"
+            : "fa-arrow-up";
+
+        const classeValor = receita
+            ? "valor-receita"
+            : "valor-despesa";
+
+        const classeIcone = receita
+            ? "icone-receita"
+            : "icone-despesa";
+
+        const categoria =
+            transacao.categoria &&
+            String(transacao.categoria).trim() !== ""
+                ? transacao.categoria
+                : "Sem categoria";
+
+        const descricao =
+            transacao.descricao &&
+            String(transacao.descricao).trim() !== ""
+                ? transacao.descricao
+                : categoria;
+
+        const dataFormatada = formatarData(transacao.data);
+
+        item.innerHTML = `
+            <div class="transacao-esquerda">
+
+                <div class="transacao-icon ${classeIcone}">
+                    <i class="fa-solid ${icone}"></i>
+                </div>
+
+                <div class="transacao-dados">
+
+                    <div class="transacao-nome">
+                        ${transacao.destinatario || "Transação"}
+                    </div>
+
+                    <div class="transacao-descricao">
+                        ${descricao}
+                    </div>
+
+                    <div class="transacao-detalhes">
+
+                        <span>
+                            <i class="fa-regular fa-calendar"></i>
+                            ${dataFormatada}
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-tag"></i>
+                            ${categoria}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="transacao-direita">
+
+                <span class="transacao-tipo">
+                    ${receita ? "Receita" : "Despesa"}
+                </span>
+
+                <strong class="transacao-valor ${classeValor}">
+                    ${sinal}${formatarMoeda(transacao.valor)}
+                </strong>
 
             </div>
         `;
 
-        return;
-    }
-
-    const transacoesOrdenadas =
-        [...transacoesCarregadas]
-            .sort(
-                (a, b) => {
-                    const dataA =
-                        a.data
-                            ? new Date(a.data)
-                            : new Date(0);
-
-                    const dataB =
-                        b.data
-                            ? new Date(b.data)
-                            : new Date(0);
-
-                    return (
-                        dataB -
-                        dataA
-                    );
-                }
-            );
-
-    const transacoesExibidas =
-        mostrarTodasTransacoes
-            ? transacoesOrdenadas
-            : transacoesOrdenadas.slice(
-                0,
-                5
-            );
-
-    transacoesExibidas.forEach(
-        transacao => {
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-            item.classList.add(
-                "transacao-item"
-            );
-
-            const sinal =
-                transacao.tipo ===
-                "RECEITA"
-                    ? "+"
-                    : "-";
-
-            const botoesAcao =
-                transacao.origem ===
-                "MANUAL"
-                    ? `
-                        <button
-                            class="btn-editar"
-                            title="Editar transação"
-                            type="button"
-                        >
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-
-                        <button
-                            class="btn-excluir"
-                            title="Excluir transação"
-                            type="button"
-                        >
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    `
-                    : "";
-
-            item.innerHTML = `
-                <div class="transacao-info">
-
-                    <div class="transacao-icon">
-
-                        <i class="fa-solid ${
-                            transacao.tipo ===
-                            "RECEITA"
-                                ? "fa-arrow-up"
-                                : "fa-arrow-down"
-                        }"></i>
-
-                    </div>
-
-                    <div>
-
-                        <h4>
-                            ${
-                                transacao.destinatario ||
-                                "Transação"
-                            }
-                        </h4>
-
-                        <p>
-                            ${
-                                transacao.descricao ||
-                                "Sem descrição"
-                            }
-                        </p>
-
-                        <small>
-                            ${
-                                transacao.categoria ||
-                                "Sem categoria"
-                            }
-                            •
-                            ${
-                                transacao.data ||
-                                "Sem data"
-                            }
-                        </small>
-
-                    </div>
-
-                </div>
-
-                <div class="transacao-direita">
-
-                    <div class="transacao-valor ${
-                        transacao.tipo ===
-                        "RECEITA"
-                            ? "valor-receita"
-                            : "valor-despesa"
-                    }">
-
-                        ${sinal}${formatarMoeda(
-                            transacao.valor
-                        )}
-
-                    </div>
-
-                    ${botoesAcao}
-
-                </div>
-            `;
-
-            lista.appendChild(
-                item
-            );
-
-            const btnEditar =
-                item.querySelector(
-                    ".btn-editar"
-                );
-
-            if (btnEditar) {
-                btnEditar.addEventListener(
-                    "click",
-                    () => {
-                        abrirEdicao(
-                            transacao
-                        );
-                    }
-                );
-            }
-
-            const btnExcluir =
-                item.querySelector(
-                    ".btn-excluir"
-                );
-
-            if (btnExcluir) {
-                btnExcluir.addEventListener(
-                    "click",
-                    () => {
-                        abrirModalExclusao(
-                            transacao
-                        );
-                    }
-                );
-            }
-        }
-    );
-}
-
-const modalExcluir =
-    document.getElementById(
-        "modalExcluir"
-    );
-
-const fecharModalExcluir =
-    document.getElementById(
-        "fecharModalExcluir"
-    );
-
-const cancelarExclusao =
-    document.getElementById(
-        "cancelarExclusao"
-    );
-
-const confirmarExclusao =
-    document.getElementById(
-        "confirmarExclusao"
-    );
-
-const nomeTransacaoExcluir =
-    document.getElementById(
-        "nomeTransacaoExcluir"
-    );
-
-const descricaoTransacaoExcluir =
-    document.getElementById(
-        "descricaoTransacaoExcluir"
-    );
-
-const valorTransacaoExcluir =
-    document.getElementById(
-        "valorTransacaoExcluir"
-    );
-
-let transacaoParaExcluir = null;
-
-function abrirModalExclusao(
-    transacao
-) {
-    if (
-        transacao.origem !==
-        "MANUAL"
-    ) {
-        return;
-    }
-
-    transacaoParaExcluir =
-        transacao;
-
-    if (nomeTransacaoExcluir) {
-        nomeTransacaoExcluir.textContent =
-            transacao.destinatario;
-    }
-
-    if (
-        descricaoTransacaoExcluir
-    ) {
-        descricaoTransacaoExcluir.textContent =
-            transacao.descricao ||
-            "Sem descrição";
-    }
-
-    if (valorTransacaoExcluir) {
-        const sinal =
-            transacao.tipo ===
-            "RECEITA"
-                ? "+"
-                : "-";
-
-        valorTransacaoExcluir.textContent =
-            sinal +
-            formatarMoeda(
-                transacao.valor
-            );
-
-        valorTransacaoExcluir
-            .classList
-            .remove(
-                "valor-receita",
-                "valor-despesa"
-            );
-
-        valorTransacaoExcluir
-            .classList
-            .add(
-                transacao.tipo ===
-                "RECEITA"
-                    ? "valor-receita"
-                    : "valor-despesa"
-            );
-    }
-
-    if (modalExcluir) {
-        modalExcluir.classList.add(
-            "ativo"
-        );
-    }
-}
-
-function fecharModalExclusao() {
-    if (modalExcluir) {
-        modalExcluir.classList.remove(
-            "ativo"
-        );
-    }
-
-    transacaoParaExcluir = null;
-}
-
-if (fecharModalExcluir) {
-    fecharModalExcluir.addEventListener(
-        "click",
-        fecharModalExclusao
-    );
-}
-
-if (cancelarExclusao) {
-    cancelarExclusao.addEventListener(
-        "click",
-        fecharModalExclusao
-    );
-}
-
-if (modalExcluir) {
-    modalExcluir.addEventListener(
-        "click",
-        event => {
-            if (
-                event.target ===
-                modalExcluir
-            ) {
-                fecharModalExclusao();
-            }
-        }
-    );
-}
-
-if (confirmarExclusao) {
-    confirmarExclusao.addEventListener(
-        "click",
-        () => {
-            if (
-                !transacaoParaExcluir
-            ) {
-                return;
-            }
-
-            const id =
-                transacaoParaExcluir.id;
-
-            confirmarExclusao.disabled =
-                true;
-
-            confirmarExclusao.innerHTML = `
-                <i class="fa-solid fa-spinner fa-spin"></i>
-                Excluindo...
-            `;
-
-            excluirTransacao(
-                id
-            );
-        }
-    );
-}
-
-function excluirTransacao(id) {
-    fetch(
-        `${API_URL}/transacoes/${id}`,
-        {
-            method: "DELETE"
-        }
-    )
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(
-                    "Erro ao excluir transação"
-                );
-            }
-
-            return response.text();
-        })
-        .then(() => {
-            fecharModalExclusao();
-
-            carregarTransacoes();
-
-            mostrarMensagemSincronizacao(
-                "Transação excluída!",
-                "A movimentação foi removida com sucesso.",
-                "sucesso"
-            );
-        })
-        .catch(error => {
-            console.error(
-                "Erro ao excluir:",
-                error
-            );
-
-            mostrarMensagemSincronizacao(
-                "Erro ao excluir",
-                "Não foi possível excluir a transação.",
-                "erro"
-            );
-        })
-                .finally(() => {
-            if (confirmarExclusao) {
-                confirmarExclusao.disabled =
-                    false;
-
-                confirmarExclusao.innerHTML = `
-                    <i class="fa-solid fa-trash-can"></i>
-                    Sim, excluir
-                `;
-            }
-        });
-}
-
-const modal =
-    document.getElementById(
-        "modalTransacao"
-    );
-
-const btnNovaTransacao =
-    document.querySelector(
-        ".btn-transacao"
-    );
-
-const fecharModal =
-    document.getElementById(
-        "fecharModal"
-    );
-
-const cancelarTransacao =
-    document.getElementById(
-        "cancelarTransacao"
-    );
-
-const salvarTransacao =
-    document.getElementById(
-        "salvarTransacao"
-    );
-
-const botoesTipo =
-    document.querySelectorAll(
-        ".tipo-btn"
-    );
-
-const campoValor =
-    document.getElementById(
-        "transacaoValor"
-    );
-
-let tipoSelecionado =
-    "DESPESA";
-
-let transacaoEditandoId =
-    null;
-
-if (btnNovaTransacao) {
-    btnNovaTransacao.addEventListener(
-        "click",
-        () => {
-            transacaoEditandoId =
-                null;
-
-            limparFormulario();
-
-            const tituloModal =
-                document.querySelector(
-                    ".modal-topo h2"
-                );
-
-            if (tituloModal) {
-                tituloModal.textContent =
-                    "Nova transação";
-            }
-
-            if (salvarTransacao) {
-                salvarTransacao.textContent =
-                    "Salvar transação";
-            }
-
-            if (modal) {
-                modal.classList.add(
-                    "ativo"
-                );
-            }
-
-            const campoData =
-                document.getElementById(
-                    "transacaoData"
-                );
-
-            if (campoData) {
-                campoData.value =
-                    new Date()
-                        .toISOString()
-                        .split("T")[0];
-            }
-        }
-    );
-}
-
-if (fecharModal) {
-    fecharModal.addEventListener(
-        "click",
-        fecharModalTransacao
-    );
-}
-
-if (cancelarTransacao) {
-    cancelarTransacao.addEventListener(
-        "click",
-        fecharModalTransacao
-    );
-}
-
-botoesTipo.forEach(botao => {
-    botao.addEventListener(
-        "click",
-        () => {
-            botoesTipo.forEach(btn => {
-                btn.classList.remove(
-                    "ativo"
-                );
-            });
-
-            botao.classList.add(
-                "ativo"
-            );
-
-            tipoSelecionado =
-                botao.dataset.tipo;
-        }
-    );
-});
-
-if (campoValor) {
-    campoValor.addEventListener(
-        "input",
-        () => {
-            let numeros =
-                campoValor.value
-                    .replace(
-                        /\D/g,
-                        ""
-                    );
-
-            if (
-                numeros === ""
-            ) {
-                campoValor.value = "";
-                return;
-            }
-
-            const valor =
-                Number(
-                    numeros
-                ) / 100;
-
-            campoValor.value =
-                valor.toLocaleString(
-                    "pt-BR",
-                    {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }
-                );
-        }
-    );
-}
-
-function abrirEdicao(transacao) {
-    if (
-        transacao.origem !==
-        "MANUAL"
-    ) {
-        return;
-    }
-
-    transacaoEditandoId =
-        transacao.id;
-
-    const tituloModal =
-        document.querySelector(
-            ".modal-topo h2"
-        );
-
-    if (tituloModal) {
-        tituloModal.textContent =
-            "Editar transação";
-    }
-
-    if (salvarTransacao) {
-        salvarTransacao.textContent =
-            "Salvar alterações";
-    }
-
-    document
-        .getElementById(
-            "transacaoValor"
-        )
-        .value =
-            Number(
-                transacao.valor
-            ).toLocaleString(
-                "pt-BR",
-                {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                }
-            );
-
-    document
-        .getElementById(
-            "transacaoDestinatario"
-        )
-        .value =
-            transacao.destinatario;
-
-    document
-        .getElementById(
-            "transacaoDescricao"
-        )
-        .value =
-            transacao.descricao || "";
-
-    document
-        .getElementById(
-            "transacaoCategoria"
-        )
-        .value =
-            transacao.categoria || "";
-
-    document
-        .getElementById(
-            "transacaoData"
-        )
-        .value =
-            transacao.data;
-
-    tipoSelecionado =
-        transacao.tipo;
-
-    botoesTipo.forEach(botao => {
-        botao.classList.remove(
-            "ativo"
-        );
-
-        if (
-            botao.dataset.tipo ===
-            transacao.tipo
-        ) {
-            botao.classList.add(
-                "ativo"
-            );
-        }
-    });
-
-    if (modal) {
-        modal.classList.add(
-            "ativo"
-        );
-    }
-}
-
-if (salvarTransacao) {
-    salvarTransacao.addEventListener(
-        "click",
-        () => {
-            const valorTexto =
-                document
-                    .getElementById(
-                        "transacaoValor"
-                    )
-                    .value;
-
-            const valor =
-                Number(
-                    valorTexto
-                        .replace(
-                            /\./g,
-                            ""
-                        )
-                        .replace(
-                            ",",
-                            "."
-                        )
-                );
-
-            const destinatario =
-                document
-                    .getElementById(
-                        "transacaoDestinatario"
-                    )
-                    .value
-                    .trim();
-
-            const descricao =
-                document
-                    .getElementById(
-                        "transacaoDescricao"
-                    )
-                    .value
-                    .trim();
-
-            const categoria =
-                document
-                    .getElementById(
-                        "transacaoCategoria"
-                    )
-                    .value;
-
-            const data =
-                document
-                    .getElementById(
-                        "transacaoData"
-                    )
-                    .value;
-
-            if (
-                !valor ||
-                valor <= 0
-            ) {
-                mostrarMensagemSincronizacao(
-                    "Valor inválido",
-                    "Informe um valor maior que zero.",
-                    "erro"
-                );
-
-                return;
-            }
-
-            if (
-                destinatario === ""
-            ) {
-                mostrarMensagemSincronizacao(
-                    "Destinatário obrigatório",
-                    "Informe o destinatário ou origem.",
-                    "erro"
-                );
-
-                return;
-            }
-
-            if (
-                data === ""
-            ) {
-                mostrarMensagemSincronizacao(
-                    "Data obrigatória",
-                    "Informe a data da transação.",
-                    "erro"
-                );
-
-                return;
-            }
-
-            const editando =
-                transacaoEditandoId !==
-                null;
-
-            const transacao = {
-                valor,
-                destinatario,
-                descricao,
-                categoria,
-                data,
-                tipo:
-                    tipoSelecionado
-            };
-
-            const url =
-                editando
-                    ? `${API_URL}/transacoes/${transacaoEditandoId}`
-                    : `${API_URL}/transacoes/usuario/${usuarioId}`;
-
-            const metodo =
-                editando
-                    ? "PUT"
-                    : "POST";
-
-            salvarTransacao.disabled =
-                true;
-
-            salvarTransacao.innerHTML = `
-                <i class="fa-solid fa-spinner fa-spin"></i>
-                Salvando...
-            `;
-
-            fetch(
-                url,
-                {
-                    method:
-                        metodo,
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(
-                            transacao
-                        )
-                }
-            )
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(
-                            "Erro ao salvar transação"
-                        );
-                    }
-
-                    return response.json();
-                })
-                .then(() => {
-                    fecharModalTransacao();
-
-                    carregarTransacoes();
-
-                    mostrarMensagemSincronizacao(
-                        editando
-                            ? "Transação atualizada!"
-                            : "Transação adicionada!",
-                        editando
-                            ? "As alterações foram salvas com sucesso."
-                            : "A movimentação foi registrada com sucesso.",
-                        "sucesso"
-                    );
-                })
-                .catch(error => {
-                    console.error(
-                        error
-                    );
-
-                    mostrarMensagemSincronizacao(
-                        "Erro",
-                        "Não foi possível salvar a transação.",
-                        "erro"
-                    );
-                })
-                .finally(() => {
-                    salvarTransacao.disabled =
-                        false;
-
-                    salvarTransacao.textContent =
-                        editando
-                            ? "Salvar alterações"
-                            : "Salvar transação";
-                });
-        }
-    );
-}
-
-function fecharModalTransacao() {
-    if (!modal) {
-        return;
-    }
-
-    modal.classList.remove(
-        "ativo"
-    );
-
-    limparFormulario();
-
-    transacaoEditandoId =
-        null;
-
-    const tituloModal =
-        document.querySelector(
-            ".modal-topo h2"
-        );
-
-    if (tituloModal) {
-        tituloModal.textContent =
-            "Nova transação";
-    }
-
-    if (salvarTransacao) {
-        salvarTransacao.textContent =
-            "Salvar transação";
-    }
-}
-
-function limparFormulario() {
-    const valor =
-        document.getElementById(
-            "transacaoValor"
-        );
-
-    const destinatario =
-        document.getElementById(
-            "transacaoDestinatario"
-        );
-
-    const descricao =
-        document.getElementById(
-            "transacaoDescricao"
-        );
-
-    const categoria =
-        document.getElementById(
-            "transacaoCategoria"
-        );
-
-    const data =
-        document.getElementById(
-            "transacaoData"
-        );
-
-    if (valor) {
-        valor.value = "";
-    }
-
-    if (destinatario) {
-        destinatario.value = "";
-    }
-
-    if (descricao) {
-        descricao.value = "";
-    }
-
-    if (categoria) {
-        categoria.value = "";
-    }
-
-    if (data) {
-        data.value = "";
-    }
-
-    tipoSelecionado =
-        "DESPESA";
-
-    botoesTipo.forEach(botao => {
-        botao.classList.remove(
-            "ativo"
-        );
-
-        if (
-            botao.dataset.tipo ===
-            "DESPESA"
-        ) {
-            botao.classList.add(
-                "ativo"
-            );
-        }
+        lista.appendChild(item);
     });
 }
-const btnPerfil =
-    document.getElementById(
-        "btnPerfil"
-    );
 
-const modalPerfil =
-    document.getElementById(
-        "modalPerfil"
-    );
-
-const fecharModalPerfil =
-    document.getElementById(
-        "fecharModalPerfil"
-    );
+const btnPerfil = document.getElementById("btnPerfil");
+const modalPerfil = document.getElementById("modalPerfil");
+const fecharModalPerfil = document.getElementById("fecharModalPerfil");
 
 const perfilNomeExibicao =
-    document.getElementById(
-        "perfilNomeExibicao"
-    );
+    document.getElementById("perfilNomeExibicao");
 
 const perfilUsernameExibicao =
-    document.getElementById(
-        "perfilUsernameExibicao"
-    );
+    document.getElementById("perfilUsernameExibicao");
 
 const perfilNome =
-    document.getElementById(
-        "perfilNome"
-    );
+    document.getElementById("perfilNome");
 
 const perfilUsername =
-    document.getElementById(
-        "perfilUsername"
-    );
+    document.getElementById("perfilUsername");
 
 const perfilEmail =
-    document.getElementById(
-        "perfilEmail"
-    );
+    document.getElementById("perfilEmail");
 
 const perfilTelefone =
-    document.getElementById(
-        "perfilTelefone"
-    );
+    document.getElementById("perfilTelefone");
 
 const statusEmail =
-    document.getElementById(
-        "statusEmail"
-    );
+    document.getElementById("statusEmail");
 
 const statusTelefone =
-    document.getElementById(
-        "statusTelefone"
-    );
+    document.getElementById("statusTelefone");
 
 const btnEditarPerfil =
-    document.getElementById(
-        "btnEditarPerfil"
-    );
+    document.getElementById("btnEditarPerfil");
 
-function atualizarStatusVerificacao(
-    elemento,
-    verificado
-) {
+function atualizarStatusVerificacao(elemento, verificado) {
     if (!elemento) {
         return;
     }
 
     if (verificado) {
-        elemento.textContent =
-            "Verificado";
-
-        elemento.classList.add(
-            "verificado"
-        );
-
+        elemento.textContent = "Verificado";
+        elemento.classList.add("verificado");
     } else {
-        elemento.textContent =
-            "Não verificado";
-
-        elemento.classList.remove(
-            "verificado"
-        );
+        elemento.textContent = "Não verificado";
+        elemento.classList.remove("verificado");
     }
 }
 
 function preencherPerfil(usuario) {
     if (perfilNomeExibicao) {
         perfilNomeExibicao.textContent =
-            usuario.nome ||
-            "Usuário";
+            usuario.nome || "Usuário";
     }
 
     if (perfilUsernameExibicao) {
         perfilUsernameExibicao.textContent =
             usuario.username
-                ? "@" +
-                  usuario.username
+                ? `@${usuario.username}`
                 : "@usuario";
     }
 
@@ -1454,22 +762,7 @@ function preencherPerfil(usuario) {
             usuario.nome
         );
 
-        const nomeCurto =
-            obterNomeCurto(
-                usuario.nome
-            );
-
-        const tituloUsuario =
-            document.getElementById(
-                "tituloUsuario"
-            );
-
-        if (tituloUsuario) {
-            tituloUsuario.textContent =
-                "Olá, " +
-                nomeCurto +
-                "!";
-        }
+        atualizarNomeUsuario(usuario.nome);
     }
 
     if (usuario.username) {
@@ -1486,14 +779,12 @@ async function carregarPerfil() {
     }
 
     try {
-        const response =
-            await fetch(
-                `${API_URL}/usuarios/${usuarioId}`
-            );
+        const response = await fetch(
+            `${API_URL}/usuarios/${usuarioId}`
+        );
 
         if (!response.ok) {
-            const mensagemErro =
-                await response.text();
+            const mensagemErro = await response.text();
 
             throw new Error(
                 mensagemErro ||
@@ -1501,12 +792,9 @@ async function carregarPerfil() {
             );
         }
 
-        const usuario =
-            await response.json();
+        const usuario = await response.json();
 
-        preencherPerfil(
-            usuario
-        );
+        preencherPerfil(usuario);
 
     } catch (error) {
         console.error(
@@ -1514,7 +802,7 @@ async function carregarPerfil() {
             error
         );
 
-        mostrarMensagemSincronizacao(
+        mostrarMensagem(
             "Erro ao carregar perfil",
             "Não foi possível carregar seus dados.",
             "erro"
@@ -1527,9 +815,7 @@ function abrirModalPerfil() {
         return;
     }
 
-    modalPerfil.classList.add(
-        "ativo"
-    );
+    modalPerfil.classList.add("ativo");
 
     carregarPerfil();
 }
@@ -1539,9 +825,7 @@ function fecharPerfil() {
         return;
     }
 
-    modalPerfil.classList.remove(
-        "ativo"
-    );
+    modalPerfil.classList.remove("ativo");
 }
 
 if (btnPerfil) {
@@ -1562,10 +846,7 @@ if (modalPerfil) {
     modalPerfil.addEventListener(
         "click",
         event => {
-            if (
-                event.target ===
-                modalPerfil
-            ) {
+            if (event.target === modalPerfil) {
                 fecharPerfil();
             }
         }
@@ -1576,7 +857,7 @@ if (btnEditarPerfil) {
     btnEditarPerfil.addEventListener(
         "click",
         () => {
-            mostrarMensagemSincronizacao(
+            mostrarMensagem(
                 "Em breve",
                 "A edição do perfil será implementada na próxima etapa.",
                 "sucesso"
@@ -1585,7 +866,7 @@ if (btnEditarPerfil) {
     );
 }
 
-function mostrarMensagemSincronizacao(
+function mostrarMensagem(
     titulo,
     mensagem,
     tipo = "sucesso"
@@ -1600,9 +881,7 @@ function mostrarMensagemSincronizacao(
     }
 
     const toast =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
     toast.classList.add(
         "toast-sincronizacao",
@@ -1616,65 +895,42 @@ function mostrarMensagemSincronizacao(
 
     toast.innerHTML = `
         <div class="toast-icone">
-
             <i class="fa-solid ${icone}"></i>
-
         </div>
 
         <div class="toast-conteudo">
-
-            <strong>
-                ${titulo}
-            </strong>
-
-            <span>
-                ${mensagem}
-            </span>
-
+            <strong>${titulo}</strong>
+            <span>${mensagem}</span>
         </div>
 
         <button
             class="toast-fechar"
             type="button"
         >
-
             <i class="fa-solid fa-xmark"></i>
-
         </button>
     `;
 
-    document.body.appendChild(
-        toast
-    );
+    document.body.appendChild(toast);
 
-    requestAnimationFrame(
-        () => {
-            toast.classList.add(
-                "mostrar"
-            );
-        }
-    );
+    requestAnimationFrame(() => {
+        toast.classList.add("mostrar");
+    });
 
     const fechar =
         toast.querySelector(
             ".toast-fechar"
         );
 
-    fechar.addEventListener(
-        "click",
-        () => {
-            removerToast(
-                toast
-            );
-        }
-    );
+    if (fechar) {
+        fechar.addEventListener(
+            "click",
+            () => removerToast(toast)
+        );
+    }
 
     setTimeout(
-        () => {
-            removerToast(
-                toast
-            );
-        },
+        () => removerToast(toast),
         4500
     );
 }
@@ -1684,945 +940,130 @@ function removerToast(toast) {
         return;
     }
 
-    toast.classList.remove(
-        "mostrar"
-    );
+    toast.classList.remove("mostrar");
 
-    setTimeout(
-        () => {
-            if (
-                toast.parentNode
-            ) {
-                toast.remove();
-            }
-        },
-        300
-    );
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.remove();
+        }
+    }, 300);
 }
 
-const btnConectarBanco =
-    document.getElementById(
-        "btnConectarBanco"
-    );
-
-async function conectarBanco() {
-    if (!btnConectarBanco) {
-        return;
-    }
-
-    const conteudoOriginal =
-        btnConectarBanco.innerHTML;
-
-    btnConectarBanco.disabled =
-        true;
-
-    btnConectarBanco.innerHTML = `
-        <i class="fa-solid fa-spinner fa-spin"></i>
-        Abrindo...
-    `;
-
-    try {
-        const response =
-            await fetch(
-                `${API_URL}/pluggy/connect-token/${usuarioId}`,
-                {
-                    method: "POST"
-                }
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                "Não foi possível gerar o token de conexão."
-            );
-        }
-
-        const dados =
-            await response.json();
-
-        if (!dados.accessToken) {
-            throw new Error(
-                "Connect Token não recebido."
-            );
-        }
-
-        if (
-            typeof PluggyConnect ===
-            "undefined"
-        ) {
-            throw new Error(
-                "Pluggy Connect não foi carregado."
-            );
-        }
-
-        const pluggyConnect =
-            new PluggyConnect({
-                connectToken:
-                    dados.accessToken,
-
-                includeSandbox:
-                    true,
-
-                onSuccess:
-                    async itemData => {
-                        console.log(
-                            "Banco conectado:",
-                            itemData
-                        );
-
-                        const itemId =
-                            itemData?.item?.id ||
-                            itemData?.id;
-
-                        if (itemId) {
-                            try {
-                                const responseSincronizacao =
-                                    await fetch(
-                                        `${API_URL}/pluggy/contas/sincronizar/${usuarioId}/${itemId}`,
-                                        {
-                                            method: "POST"
-                                        }
-                                    );
-
-                                if (
-                                    !responseSincronizacao.ok
-                                ) {
-                                    throw new Error(
-                                        "Erro ao salvar as contas conectadas."
-                                    );
-                                }
-
-                               await carregarSaldoBancario();
-
-                                await carregarBancosConectados();
-
-                                mostrarMensagemSincronizacao(
-                                    "Banco conectado!",
-                                    "Sua conta foi conectada e salva com sucesso.",
-                                    "sucesso"
-                                );
-                                
-                            } catch (error) {
-                                console.error(
-                                    "Erro ao salvar conexão:",
-                                    error
-                                );
-
-                                mostrarMensagemSincronizacao(
-                                    "Banco conectado",
-                                    "A conexão foi criada, mas houve um erro ao salvar os dados da conta.",
-                                    "erro"
-                                );
-                            }
-
-                        } else {
-                            mostrarMensagemSincronizacao(
-                                "Banco conectado!",
-                                "A instituição foi conectada com sucesso.",
-                                "sucesso"
-                            );
-                        }
-                    },
-
-                onError:
-                    error => {
-                        console.error(
-                            "Erro no Pluggy Connect:",
-                            error
-                        );
-
-                        mostrarMensagemSincronizacao(
-                            "Erro na conexão",
-                            "Não foi possível conectar a instituição.",
-                            "erro"
-                        );
-                    },
-
-                onClose:
-                    () => {
-                        btnConectarBanco.disabled =
-                            false;
-
-                        btnConectarBanco.innerHTML =
-                            conteudoOriginal;
-                    }
-            });
-
-        pluggyConnect.init();
-
-    } catch (error) {
-        console.error(
-            "Erro ao conectar banco:",
-            error
-        );
-
-        mostrarMensagemSincronizacao(
-            "Erro ao conectar banco",
-            "Não foi possível iniciar a conexão bancária.",
-            "erro"
-        );
-
-        btnConectarBanco.disabled =
-            false;
-
-        btnConectarBanco.innerHTML =
-            conteudoOriginal;
-    }
-}
-
-if (btnConectarBanco) {
-    btnConectarBanco.addEventListener(
-        "click",
-        conectarBanco
-    );
-}
-
-async function carregarBancosConectados() {
-
-    try {
-
-        const response =
-            await fetch(
-                `${API_URL}/contas-bancarias/usuario/${usuarioId}`
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                "Não foi possível carregar os bancos conectados."
-            );
-        }
-
-        const contas =
-            await response.json();
-
-        renderizarBancosConectados(
-            Array.isArray(contas)
-                ? contas
-                : []
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao carregar bancos conectados:",
-            error
-        );
-    }
-}
-
-
-function renderizarBancosConectados(
-    contas
-) {
-
-    let container =
-        document.getElementById(
-            "bancosConectadosContainer"
-        );
-
-    if (!container) {
-
-        const referencia =
-            document.querySelector(
-                ".resumo"
-            );
-
-        if (!referencia) {
-            return;
-        }
-
-        container =
-            document.createElement(
-                "div"
-            );
-
-        container.id =
-            "bancosConectadosContainer";
-
-        referencia.parentNode
-            .insertBefore(
-                container,
-                referencia
-            );
-    }
-
-    container.innerHTML = "";
-
-    if (contas.length === 0) {
-
-        container.style.display =
-            "none";
-
-        return;
-    }
-
-    container.style.display =
-        "block";
-
-
-    const contasPorItem =
-        new Map();
-
-
-    contas.forEach(
-        conta => {
-
-            const itemId =
-                conta.itemId ||
-                "sem-item";
-
-            if (
-                !contasPorItem.has(
-                    itemId
-                )
-            ) {
-
-                contasPorItem.set(
-                    itemId,
-                    []
-                );
-            }
-
-            contasPorItem
-                .get(itemId)
-                .push(conta);
-        }
-    );
-
-
-    contasPorItem.forEach(
-        (
-            contasDoBanco,
-            itemId
-        ) => {
-
-            const primeiraConta =
-                contasDoBanco[0];
-
-
-            const nomeBanco =
-                primeiraConta.nomeBanco ||
-                "Banco conectado";
-
-
-            const saldoBanco =
-                contasDoBanco.reduce(
-                    (
-                        total,
-                        conta
-                    ) => {
-
-                        return (
-                            total +
-                            Number(
-                                conta.saldo ||
-                                0
-                            )
-                        );
-                    },
-                    0
-                );
-
-
-            const tiposConta =
-                contasDoBanco
-                    .map(
-                        conta =>
-                            conta.tipoConta
-                    )
-                    .filter(
-                        tipo =>
-                            tipo
-                    )
-                    .join(
-                        " • "
-                    );
-
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "banco-conectado";
-
-
-            card.innerHTML = `
-
-                <div class="banco-conectado-info">
-
-                    <div class="banco-conectado-icone">
-
-                        <i class="fa-solid fa-building-columns"></i>
-
-                    </div>
-
-
-                    <div class="banco-conectado-dados">
-
-                        <div class="banco-conectado-status">
-
-                            <i class="fa-solid fa-circle-check"></i>
-
-                            Conectado
-
-                        </div>
-
-
-                        <h3>
-                            ${nomeBanco}
-                        </h3>
-
-
-                        <p>
-
-                            ${
-                                tiposConta ||
-                                "Conta bancária"
-                            }
-
-                            •
-
-                            ${
-                                formatarMoeda(
-                                    saldoBanco
-                                )
-                            }
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="banco-conectado-acoes">
-
-                    <button
-                        class="btn-atualizar-banco"
-                        type="button"
-                    >
-
-                        <i class="fa-solid fa-rotate"></i>
-
-                        Atualizar
-
-                    </button>
-
-
-                    <button
-                        class="btn-desconectar-banco"
-                        type="button"
-                    >
-
-                        <i class="fa-solid fa-link-slash"></i>
-
-                        Desconectar
-
-                    </button>
-
-                </div>
-
-            `;
-
-
-            const btnAtualizar =
-                card.querySelector(
-                    ".btn-atualizar-banco"
-                );
-
-
-            const btnDesconectar =
-                card.querySelector(
-                    ".btn-desconectar-banco"
-                );
-
-
-            btnAtualizar
-                .addEventListener(
-                    "click",
-                    async () => {
-
-                        await sincronizarBanco();
-
-                    }
-                );
-
-
-            btnDesconectar
-                .addEventListener(
-                    "click",
-                    async () => {
-
-                        await desconectarBanco(
-                            itemId,
-                            nomeBanco,
-                            btnDesconectar
-                        );
-
-                    }
-                );
-
-
-            container.appendChild(
-                card
-            );
-        }
-    );
-}
-
-
-async function desconectarBanco(
-    itemId,
-    nomeBanco,
-    botao
-) {
-
-    if (
-        !itemId ||
-        itemId === "sem-item"
-    ) {
-
-        mostrarMensagemSincronizacao(
-            "Erro ao desconectar",
-            "Não foi possível identificar a conexão bancária.",
-            "erro"
-        );
-
-        return;
-    }
-
-
-    const confirmar =
-        window.confirm(
-            `Deseja desconectar ${nomeBanco}? As transações já importadas continuarão salvas.`
-        );
-
-
-    if (!confirmar) {
-        return;
-    }
-
-
-    const conteudoOriginal =
-        botao.innerHTML;
-
-
-    botao.disabled =
-        true;
-
-
-    botao.innerHTML = `
-
-        <i class="fa-solid fa-spinner fa-spin"></i>
-
-        Desconectando...
-
-    `;
-
-
-    try {
-
-        const response =
-            await fetch(
-
-                `${API_URL}/pluggy/desconectar/${usuarioId}/${encodeURIComponent(itemId)}`,
-
-                {
-                    method:
-                        "DELETE"
-                }
-
-            );
-
-
-        if (!response.ok) {
-
-            const mensagem =
-                await response.text();
-
-
-            throw new Error(
-
-                mensagem ||
-
-                "Não foi possível desconectar o banco."
-
-            );
-        }
-
-
-        saldoBancarioAtual =
-            null;
-
-
-        await carregarSaldoBancario();
-
-
-        await carregarBancosConectados();
-
-
-        mostrarMensagemSincronizacao(
-
-            "Banco desconectado!",
-
-            `${nomeBanco} foi removido da sua conta.`,
-
-            "sucesso"
-
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao desconectar banco:",
-            error
-        );
-
-
-        mostrarMensagemSincronizacao(
-
-            "Erro ao desconectar",
-
-            "Não foi possível desconectar o banco.",
-
-            "erro"
-
-        );
-
-
-        botao.disabled =
-            false;
-
-
-        botao.innerHTML =
-            conteudoOriginal;
-    }
-}
-
-const btnSincronizarBanco =
-    document.getElementById(
-        "btnSincronizarBanco"
-    );
-
-async function sincronizarBanco() {
-    if (!btnSincronizarBanco) {
-        return;
-    }
-
-    const conteudoOriginal =
-        btnSincronizarBanco.innerHTML;
-
-    btnSincronizarBanco.disabled =
-        true;
-
-    btnSincronizarBanco.innerHTML = `
-        <i class="fa-solid fa-rotate fa-spin"></i>
-        Sincronizando...
-    `;
-
-    try {
-        const response =
-            await fetch(
-                `${API_URL}/pluggy/sincronizar/usuario/${usuarioId}`,
-                {
-                    method: "POST"
-                }
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                "Erro ao sincronizar banco."
-            );
-        }
-
-        const dados =
-            await response.json();
-
-        await carregarSaldoBancario();
-
-        mostrarMensagemSincronizacao(
-            "Banco sincronizado!",
-            `Novas transações: ${dados.transacoesImportadas ?? 0} • Já existentes: ${dados.transacoesIgnoradas ?? 0}`,
-            "sucesso"
-        );
-
-    } catch (error) {
-        console.error(
-            "Erro ao sincronizar banco:",
-            error
-        );
-
-        mostrarMensagemSincronizacao(
-            "Erro na sincronização",
-            "Não foi possível atualizar os dados bancários.",
-            "erro"
-        );
-
-    } finally {
-        btnSincronizarBanco.disabled =
-            false;
-
-        btnSincronizarBanco.innerHTML =
-            conteudoOriginal;
-    }
-}
-
-if (btnSincronizarBanco) {
-    btnSincronizarBanco.addEventListener(
-        "click",
-        sincronizarBanco
-    );
+function sair() {
+    localStorage.removeItem("usuarioId");
+    localStorage.removeItem("usuarioNome");
+    localStorage.removeItem("usuarioUsername");
+
+    window.location.replace("index.html");
 }
 
 const btnSair =
-    document.getElementById(
-        "btnSair"
-    );
+    document.getElementById("btnSair");
 
 if (btnSair) {
     btnSair.addEventListener(
         "click",
-        () => {
-            localStorage.removeItem(
-                "usuarioId"
-            );
-
-            localStorage.removeItem(
-                "usuarioNome"
-            );
-
-            localStorage.removeItem(
-                "usuarioUsername"
-            );
-
-            window.location.replace(
-                "index.html"
-            );
-        }
+        sair
     );
 }
 
-    const relatorioMes =
-        document.getElementById(
-            "relatorioMes"
-        );
-
-    const relatorioAno =
-        document.getElementById(
-            "relatorioAno"
-        );
-
-    const btnGerarRelatorio =
-        document.getElementById(
-            "btnGerarRelatorio"
-        );
-
-    function carregarOpcoesRelatorio() {
-        if (
-            !relatorioMes ||
-            !relatorioAno
-        ) {
-            return;
-        }
-
-        const hoje =
-            new Date();
-
-        const mesAtual =
-            hoje.getMonth() + 1;
-
-        const anoAtual =
-            hoje.getFullYear();
-
-        relatorioMes.value =
-            String(mesAtual);
-
-        relatorioAno.innerHTML = "";
-
-        for (
-            let ano = anoAtual;
-            ano >= anoAtual - 10;
-            ano--
-        ) {
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                String(ano);
-
-            option.textContent =
-                String(ano);
-
-            relatorioAno.appendChild(
-                option
-            );
-        }
-
-        relatorioAno.value =
-            String(anoAtual);
-    }
-
-    async function buscarTransacoesRelatorio(
-        mes,
-        ano
-    ) {
-        const response =
-            await fetch(
-                `${API_URL}/transacoes/usuario/${usuarioId}/periodo?mes=${mes}&ano=${ano}`
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                "Não foi possível buscar as transações do período."
-            );
-        }
-
-        return await response.json();
-    }
-
-    function calcularResumoRelatorio(
-        transacoes
-    ) {
-        let receitas = 0;
-        let despesas = 0;
-
-        transacoes.forEach(
-            transacao => {
-                const valor =
-                    Number(
-                        transacao.valor || 0
-                    );
-
-                if (
-                    transacao.tipo ===
-                    "RECEITA"
-                ) {
-                    receitas += valor;
-                }
-
-                if (
-                    transacao.tipo ===
-                    "DESPESA"
-                ) {
-                    despesas += valor;
-                }
-            }
-        );
-
-        return {
-            receitas,
-            despesas,
-            saldo:
-                receitas - despesas
-        };
-    }
-
-    async function gerarRelatorio() {
-        if (
-            !relatorioMes ||
-            !relatorioAno ||
-            !btnGerarRelatorio
-        ) {
-            return;
-        }
-
-        const mes =
-            Number(relatorioMes.value);
-
-        const ano =
-            Number(relatorioAno.value);
-
-        const conteudoOriginal =
-            btnGerarRelatorio.innerHTML;
-
-        btnGerarRelatorio.disabled =
-            true;
-
-        btnGerarRelatorio.innerHTML = `
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            Gerando PDF...
-        `;
-
-        try {
-            const response =
-                await fetch(
-                    `${API_URL}/relatorios/usuario/${usuarioId}?mes=${mes}&ano=${ano}`
-                );
-
-            if (!response.ok) {
-                throw new Error(
-                    "Não foi possível gerar o relatório."
-                );
-            }
-
-            const blob =
-                await response.blob();
-
-            const url =
-                window.URL.createObjectURL(
-                    blob
-                );
-
-            const link =
-                document.createElement(
-                    "a"
-                );
-
-            link.href = url;
-
-            link.download =
-                `relatorio_controlamigo_${String(mes).padStart(2, "0")}_${ano}.pdf`;
-
-            document.body.appendChild(
-                link
-            );
-
-            link.click();
-
-            link.remove();
-
-            window.URL.revokeObjectURL(
-                url
-            );
-
-            mostrarMensagemSincronizacao(
-                "Relatório gerado!",
-                "O PDF do período foi baixado com sucesso.",
-                "sucesso"
-            );
-
-        } catch (error) {
-            console.error(
-                "Erro ao gerar relatório:",
-                error
-            );
-
-            mostrarMensagemSincronizacao(
-                "Erro no relatório",
-                "Não foi possível gerar o PDF.",
-                "erro"
-            );
-
-        } finally {
-            btnGerarRelatorio.disabled =
-                false;
-
-            btnGerarRelatorio.innerHTML =
-                conteudoOriginal;
-        }
-    }
-
-    if (btnGerarRelatorio) {
-        btnGerarRelatorio.addEventListener(
-            "click",
-            gerarRelatorio
-        );
-    }
-
 carregarSaldoBancario();
-carregarBancosConectados();
+function iniciarEfeitosVisuais() {
+    const elementos = document.querySelectorAll(
+        ".card, .grafico-card, .home-transacoes"
+    );
+
+    elementos.forEach(elemento => {
+        elemento.addEventListener("mousemove", evento => {
+            const retangulo =
+                elemento.getBoundingClientRect();
+
+            const x =
+                evento.clientX -
+                retangulo.left;
+
+            const y =
+                evento.clientY -
+                retangulo.top;
+
+            const percentualX =
+                (x / retangulo.width) * 100;
+
+            const percentualY =
+                (y / retangulo.height) * 100;
+
+            elemento.style.setProperty(
+                "--mouse-x",
+                `${percentualX}%`
+            );
+
+            elemento.style.setProperty(
+                "--mouse-y",
+                `${percentualY}%`
+            );
+
+            if (elemento.classList.contains("card")) {
+                const centroX =
+                    retangulo.width / 2;
+
+                const centroY =
+                    retangulo.height / 2;
+
+                const rotacaoY =
+                    ((x - centroX) / centroX) * 1.5;
+
+                const rotacaoX =
+                    ((centroY - y) / centroY) * 1.5;
+
+                elemento.style.transform =
+                    `perspective(900px)
+                    rotateX(${rotacaoX}deg)
+                    rotateY(${rotacaoY}deg)
+                    translateY(-3px)`;
+            }
+        });
+
+        elemento.addEventListener("mouseleave", () => {
+            elemento.style.setProperty(
+                "--mouse-x",
+                "50%"
+            );
+
+            elemento.style.setProperty(
+                "--mouse-y",
+                "50%"
+            );
+
+            elemento.style.transform = "";
+        });
+    });
+}
+
+function animarEntradaElementos() {
+    const elementos = document.querySelectorAll(
+        ".boas-vindas, .card, .grafico-card, .home-transacoes"
+    );
+
+    elementos.forEach((elemento, indice) => {
+        elemento.style.opacity = "0";
+
+        elemento.style.transform =
+            "translateY(18px)";
+
+        elemento.style.transition =
+            "opacity 0.55s ease, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1)";
+
+        setTimeout(() => {
+            elemento.style.opacity = "1";
+            elemento.style.transform = "";
+        }, 90 * indice);
+    });
+}
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        iniciarEfeitosVisuais();
+        animarEntradaElementos();
+    }
+);
