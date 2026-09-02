@@ -1,5 +1,6 @@
 const nomeUsuario = localStorage.getItem("usuarioNome");
 const usuarioId = localStorage.getItem("usuarioId");
+const token = localStorage.getItem("token");
 
 const API_URL = "https://controlamigo-2.onrender.com";
 
@@ -8,7 +9,12 @@ let transacoesCarregadas = [];
 let graficoEvolucaoInstancia = null;
 let graficoCategoriasInstancia = null;
 
-if (!usuarioId) {
+if (!usuarioId || !token) {
+    localStorage.removeItem("usuarioId");
+    localStorage.removeItem("usuarioNome");
+    localStorage.removeItem("usuarioUsername");
+    localStorage.removeItem("token");
+
     window.location.href = "index.html";
 }
 
@@ -74,7 +80,12 @@ function formatarData(dataTransacao) {
 async function carregarSaldoBancario() {
     try {
         const responseContas = await fetch(
-            `${API_URL}/contas-bancarias/usuario/${usuarioId}`
+            `${API_URL}/contas-bancarias/usuario/${usuarioId}`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
         );
 
         if (!responseContas.ok) {
@@ -90,7 +101,12 @@ async function carregarSaldoBancario() {
         }
 
         const responseSaldo = await fetch(
-            `${API_URL}/contas-bancarias/usuario/${usuarioId}/saldo`
+            `${API_URL}/contas-bancarias/usuario/${usuarioId}/saldo`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
         );
 
         if (!responseSaldo.ok) {
@@ -115,7 +131,12 @@ async function carregarSaldoBancario() {
 async function carregarTransacoes() {
     try {
         const response = await fetch(
-            `${API_URL}/transacoes/usuario/${usuarioId}`
+            `${API_URL}/transacoes/usuario/${usuarioId}`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
         );
 
         if (!response.ok) {
@@ -780,7 +801,12 @@ async function carregarPerfil() {
 
     try {
         const response = await fetch(
-            `${API_URL}/usuarios/${usuarioId}`
+            `${API_URL}/usuarios/${usuarioId}`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
         );
 
         if (!response.ok) {
@@ -953,6 +979,7 @@ function sair() {
     localStorage.removeItem("usuarioId");
     localStorage.removeItem("usuarioNome");
     localStorage.removeItem("usuarioUsername");
+    localStorage.removeItem("token");
 
     window.location.replace("index.html");
 }

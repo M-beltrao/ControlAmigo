@@ -6,7 +6,7 @@ import com.mariana.controlefinanceiro.exception.UsuarioNaoEncontradoException;
 import com.mariana.controlefinanceiro.model.CodigoVerificacao;
 import com.mariana.controlefinanceiro.model.Usuario;
 import com.mariana.controlefinanceiro.repository.UsuarioRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,18 +17,18 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final CodigoVerificacaoService codigoVerificacaoService;
     private final EmailService emailService;
-
-    private final BCryptPasswordEncoder passwordEncoder =
-            new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
     public UsuarioService(
             UsuarioRepository usuarioRepository,
             CodigoVerificacaoService codigoVerificacaoService,
-            EmailService emailService
+            EmailService emailService,
+            PasswordEncoder passwordEncoder
     ) {
         this.usuarioRepository = usuarioRepository;
         this.codigoVerificacaoService = codigoVerificacaoService;
         this.emailService = emailService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Usuario salvarUsuario(Usuario usuario) {
@@ -295,6 +295,7 @@ public class UsuarioService {
             );
         }
     }
+
     public Usuario buscarUsuarioPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() ->

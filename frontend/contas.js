@@ -6,7 +6,28 @@ const usuarioId =
         "usuarioId"
     );
 
-if (!usuarioId) {
+const token =
+    localStorage.getItem(
+        "token"
+    );
+
+if (!usuarioId || !token) {
+    localStorage.removeItem(
+        "usuarioId"
+    );
+
+    localStorage.removeItem(
+        "usuarioNome"
+    );
+
+    localStorage.removeItem(
+        "usuarioUsername"
+    );
+
+    localStorage.removeItem(
+        "token"
+    );
+
     window.location.href =
         "index.html";
 }
@@ -259,7 +280,12 @@ async function carregarContas(
     try {
         const response =
             await fetch(
-                `${API_URL}/contas-bancarias/usuario/${usuarioId}`
+                `${API_URL}/contas-bancarias/usuario/${usuarioId}`,
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
             );
 
         if (!response.ok) {
@@ -507,7 +533,12 @@ async function carregarSaldoTotal() {
     try {
         const response =
             await fetch(
-                `${API_URL}/contas-bancarias/usuario/${usuarioId}/saldo`
+                `${API_URL}/contas-bancarias/usuario/${usuarioId}/saldo`,
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
             );
 
         if (!response.ok) {
@@ -606,7 +637,10 @@ async function conectarBanco() {
             await fetch(
                 `${API_URL}/pluggy/connect-token/${usuarioId}`,
                 {
-                    method: "POST"
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
                 }
             );
 
@@ -783,7 +817,10 @@ async function sincronizarNovaConta(
             await fetch(
                 `${API_URL}/pluggy/contas/sincronizar/${usuarioId}/${encodeURIComponent(itemId)}`,
                 {
-                    method: "POST"
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
                 }
             );
 
@@ -839,7 +876,10 @@ async function sincronizarTodasContas() {
             await fetch(
                 `${API_URL}/pluggy/sincronizar/usuario/${usuarioId}`,
                 {
-                    method: "POST"
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
                 }
             );
 
@@ -970,7 +1010,10 @@ async function desconectarConta() {
             await fetch(
                 `${API_URL}/pluggy/desconectar/${usuarioId}/${encodeURIComponent(itemId)}`,
                 {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
                 }
             );
 
@@ -1339,6 +1382,10 @@ function sair() {
 
     localStorage.removeItem(
         "usuarioUsername"
+    );
+
+    localStorage.removeItem(
+        "token"
     );
 
     window.location.replace(

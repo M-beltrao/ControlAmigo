@@ -50,6 +50,16 @@ public class ContaBancariaService {
 
         if (contaExistente != null) {
 
+            if (contaExistente.getUsuario() == null ||
+                    !contaExistente.getUsuario()
+                            .getId()
+                            .equals(usuarioId)) {
+
+                throw new RuntimeException(
+                        "Conta bancária não pertence ao usuário informado."
+                );
+            }
+
             contaExistente.setSaldo(
                     conta.getSaldo()
             );
@@ -98,6 +108,62 @@ public class ContaBancariaService {
                 .findByItemId(
                         itemId
                 );
+    }
+
+    public ContaBancaria buscarPorAccountIdDoUsuario(
+            Long usuarioId,
+            String accountId
+    ) {
+
+        ContaBancaria conta =
+                contaBancariaRepository
+                        .findByAccountId(accountId)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Conta bancária não encontrada."
+                                )
+                        );
+
+        if (conta.getUsuario() == null ||
+                !conta.getUsuario()
+                        .getId()
+                        .equals(usuarioId)) {
+
+            throw new RuntimeException(
+                    "Conta bancária não pertence ao usuário informado."
+            );
+        }
+
+        return conta;
+    }
+
+    public List<ContaBancaria> buscarPorItemIdDoUsuario(
+            Long usuarioId,
+            String itemId
+    ) {
+
+        List<ContaBancaria> contas =
+                contaBancariaRepository
+                        .findByItemId(itemId);
+
+        List<ContaBancaria> contasDoUsuario =
+                contas.stream()
+                        .filter(conta ->
+                                conta.getUsuario() != null &&
+                                        conta.getUsuario()
+                                                .getId()
+                                                .equals(usuarioId)
+                        )
+                        .toList();
+
+        if (contasDoUsuario.isEmpty()) {
+
+            throw new RuntimeException(
+                    "Conexão bancária não encontrada para este usuário."
+            );
+        }
+
+        return contasDoUsuario;
     }
 
     public double calcularSaldoTotal(

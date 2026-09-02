@@ -6,7 +6,28 @@ const usuarioId =
         "usuarioId"
     );
 
-if (!usuarioId) {
+const token =
+    localStorage.getItem(
+        "token"
+    );
+
+if (!usuarioId || !token) {
+    localStorage.removeItem(
+        "usuarioId"
+    );
+
+    localStorage.removeItem(
+        "usuarioNome"
+    );
+
+    localStorage.removeItem(
+        "usuarioUsername"
+    );
+
+    localStorage.removeItem(
+        "token"
+    );
+
     window.location.href =
         "index.html";
 }
@@ -352,9 +373,14 @@ async function carregarRelatorio() {
 
     try {
         const response =
-            await fetch(
-                `${API_URL}/transacoes/usuario/${usuarioId}/periodo?mes=${mes}&ano=${ano}`
-            );
+    await fetch(
+        `${API_URL}/transacoes/usuario/${usuarioId}/periodo?mes=${mes}&ano=${ano}`,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    );
 
         if (!response.ok) {
             const mensagem =
@@ -1221,17 +1247,20 @@ async function gerarPdf() {
 
         const response =
             await fetch(
-                urlRelatorio,
-                {
-                    method:
-                        "GET",
+                 urlRelatorio,
+            {
+                method:
+                    "GET",
 
-                    headers: {
-                        Accept:
-                            "application/pdf"
-                    }
-                }
-            );
+            headers: {
+                Accept:
+                    "application/pdf",
+
+                "Authorization":
+                    `Bearer ${token}`
+            }
+        }
+    );
 
         if (!response.ok) {
             let mensagemErro =
@@ -1764,6 +1793,10 @@ function sair() {
 
     localStorage.removeItem(
         "usuarioUsername"
+    );
+
+    localStorage.removeItem(
+        "token"
     );
 
     window.location.replace(

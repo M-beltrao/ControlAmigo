@@ -523,6 +523,11 @@ if (btnLogin) {
 
         .then(data => {
             localStorage.setItem(
+                "token",
+                data.token
+            );
+
+            localStorage.setItem(
                 "usuarioId",
                 data.id
             );
@@ -563,7 +568,6 @@ if (btnLogin) {
         });
     });
 }
-
 const loginSenha =
     document.getElementById("loginSenha");
 

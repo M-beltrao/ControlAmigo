@@ -1,23 +1,37 @@
 package com.mariana.controlefinanceiro.controller;
 
 import com.mariana.controlefinanceiro.model.Usuario;
+import com.mariana.controlefinanceiro.security.JwtService;
 import com.mariana.controlefinanceiro.service.UsuarioService;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final JwtService jwtService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(
+            UsuarioService usuarioService,
+            JwtService jwtService
+    ) {
         this.usuarioService = usuarioService;
+        this.jwtService = jwtService;
     }
+
     @GetMapping("/usuarios/{id}")
     public Usuario buscarUsuario(
-            @PathVariable Long id
+            @PathVariable Long id,
+            Authentication authentication
     ) {
+        validarAcessoAoUsuario(id, authentication);
+
         return usuarioService.buscarUsuarioPorId(id);
     }
 
@@ -29,20 +43,50 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public Usuario login(
+    public Map<String, Object> login(
             @RequestBody Usuario usuario
     ) {
-        return usuarioService.login(
-                usuario.getUsername(),
-                usuario.getSenha()
+
+        Usuario usuarioAutenticado =
+                usuarioService.login(
+                        usuario.getUsername(),
+                        usuario.getSenha()
+                );
+
+        String token =
+                jwtService.gerarToken(
+                        usuarioAutenticado.getId(),
+                        usuarioAutenticado.getUsername()
+                );
+
+        Map<String, Object> resposta = new HashMap<>();
+
+        resposta.put("token", token);
+        resposta.put("id", usuarioAutenticado.getId());
+        resposta.put("nome", usuarioAutenticado.getNome());
+        resposta.put("username", usuarioAutenticado.getUsername());
+        resposta.put("email", usuarioAutenticado.getEmail());
+        resposta.put("telefone", usuarioAutenticado.getTelefone());
+        resposta.put(
+                "emailVerificado",
+                usuarioAutenticado.isEmailVerificado()
         );
+        resposta.put(
+                "telefoneVerificado",
+                usuarioAutenticado.isTelefoneVerificado()
+        );
+
+        return resposta;
     }
 
     @PostMapping("/usuarios/{id}/email/solicitar")
     public Map<String, String> solicitarAlteracaoEmail(
             @PathVariable Long id,
-            @RequestBody Map<String, String> dados
+            @RequestBody Map<String, String> dados,
+            Authentication authentication
     ) {
+
+        validarAcessoAoUsuario(id, authentication);
 
         String mensagem =
                 usuarioService.solicitarAlteracaoEmail(
@@ -60,8 +104,12 @@ public class UsuarioController {
     @PutMapping("/usuarios/{id}/email/confirmar")
     public Usuario confirmarAlteracaoEmail(
             @PathVariable Long id,
-            @RequestBody Map<String, String> dados
+            @RequestBody Map<String, String> dados,
+            Authentication authentication
     ) {
+
+        validarAcessoAoUsuario(id, authentication);
+
         return usuarioService.confirmarAlteracaoEmail(
                 id,
                 dados.get("codigo")
@@ -71,8 +119,11 @@ public class UsuarioController {
     @PostMapping("/usuarios/{id}/telefone/solicitar")
     public Map<String, String> solicitarAlteracaoTelefone(
             @PathVariable Long id,
-            @RequestBody Map<String, String> dados
+            @RequestBody Map<String, String> dados,
+            Authentication authentication
     ) {
+
+        validarAcessoAoUsuario(id, authentication);
 
         usuarioService.solicitarAlteracaoTelefone(
                 id,
@@ -89,8 +140,12 @@ public class UsuarioController {
     @PutMapping("/usuarios/{id}/telefone/confirmar")
     public Usuario confirmarAlteracaoTelefone(
             @PathVariable Long id,
-            @RequestBody Map<String, String> dados
+            @RequestBody Map<String, String> dados,
+            Authentication authentication
     ) {
+
+        validarAcessoAoUsuario(id, authentication);
+
         return usuarioService.confirmarAlteracaoTelefone(
                 id,
                 dados.get("codigo")
@@ -118,11 +173,42 @@ public class UsuarioController {
             @RequestBody Map<String, String> dados
     ) {
 
-        String mensagem = usuarioService.redefinirSenha(
-                dados.get("email"),
-                dados.get("codigo"),
-                dados.get("novaSenha")
+        String mensagem =
+                usuarioService.redefinirSenha(
+                        dados.get("email"),
+                        dados.get("codigo"),
+                        dados.get("novaSenha")
+                );
+
+        return Map.of(
+                "mensagem",
+                mensagem
         );
-        return Map.of("mensagem", mensagem);
+    }
+
+    private void validarAcessoAoUsuario(
+            Long id,
+            Authentication authentication
+    ) {
+
+        if (authentication == null ||
+                !authentication.isAuthenticated()) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso negado."
+            );
+        }
+
+        Usuario usuario =
+                usuarioService.buscarUsuarioPorId(id);
+
+        if (!usuario.getUsername().equals(authentication.getName())) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso negado."
+            );
+        }
     }
 }

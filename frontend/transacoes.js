@@ -1,11 +1,16 @@
 const API_URL = "https://controlamigo-2.onrender.com";
 
 const usuarioId = localStorage.getItem("usuarioId");
+const token = localStorage.getItem("token");
 
-if (!usuarioId) {
+if (!usuarioId || !token) {
+    localStorage.removeItem("usuarioId");
+    localStorage.removeItem("usuarioNome");
+    localStorage.removeItem("usuarioUsername");
+    localStorage.removeItem("token");
+
     window.location.href = "index.html";
 }
-
 const listaTransacoes =
     document.getElementById("listaTransacoes");
 
@@ -152,7 +157,12 @@ function obterDescricao(transacao) {
 async function carregarTransacoes() {
     try {
         const response = await fetch(
-            `${API_URL}/transacoes/usuario/${usuarioId}`
+            `${API_URL}/transacoes/usuario/${usuarioId}`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
         );
 
         if (!response.ok) {
@@ -868,8 +878,8 @@ async function salvarTransacao(evento) {
                 {
                     method: "PUT",
                     headers: {
-                        "Content-Type":
-                            "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify(
                         dados
@@ -883,8 +893,8 @@ async function salvarTransacao(evento) {
                 {
                     method: "POST",
                     headers: {
-                        "Content-Type":
-                            "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify(
                         dados
@@ -958,7 +968,10 @@ async function confirmarExclusao() {
         const response = await fetch(
             `${API_URL}/transacoes/${transacaoExcluindoId}`,
             {
-                method: "DELETE"
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             }
         );
 
@@ -1248,6 +1261,10 @@ if (btnSair) {
 
             localStorage.removeItem(
                 "usuarioUsername"
+            );
+
+            localStorage.removeItem(
+                "token"
             );
 
             window.location.replace(

@@ -1,23 +1,29 @@
 package com.mariana.controlefinanceiro.controller;
 
+import com.mariana.controlefinanceiro.model.Usuario;
 import com.mariana.controlefinanceiro.service.RelatorioService;
+import com.mariana.controlefinanceiro.service.UsuarioService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/relatorios")
 public class RelatorioController {
 
     private final RelatorioService relatorioService;
+    private final UsuarioService usuarioService;
 
     public RelatorioController(
-            RelatorioService relatorioService
+            RelatorioService relatorioService,
+            UsuarioService usuarioService
     ) {
-        this.relatorioService =
-                relatorioService;
+        this.relatorioService = relatorioService;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping(
@@ -27,8 +33,14 @@ public class RelatorioController {
     public ResponseEntity<byte[]> gerarRelatorio(
             @PathVariable Long usuarioId,
             @RequestParam int mes,
-            @RequestParam int ano
+            @RequestParam int ano,
+            Authentication authentication
     ) {
+
+        validarAcessoAoUsuario(
+                usuarioId,
+                authentication
+        );
 
         byte[] pdf =
                 relatorioService
@@ -64,5 +76,35 @@ public class RelatorioController {
                 headers,
                 HttpStatus.OK
         );
+    }
+
+    private void validarAcessoAoUsuario(
+            Long usuarioId,
+            Authentication authentication
+    ) {
+
+        if (authentication == null ||
+                !authentication.isAuthenticated()) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso negado."
+            );
+        }
+
+        Usuario usuario =
+                usuarioService.buscarUsuarioPorId(
+                        usuarioId
+                );
+
+        if (!usuario.getUsername().equals(
+                authentication.getName()
+        )) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Acesso negado."
+            );
+        }
     }
 }
